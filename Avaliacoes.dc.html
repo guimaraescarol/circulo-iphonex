@@ -1,0 +1,1107 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Avaliações</title>
+  <script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap">
+  <style>
+    .hit::after { content: ''; position: absolute; top: 50%; left: 50%; min-width: 100%; min-height: 100%; width: 44px; height: 44px; transform: translate(-50%, -50%); }
+    * { scrollbar-width: none; -ms-overflow-style: none; }
+    *::-webkit-scrollbar { width: 0; height: 0; display: none; }
+    body { margin: 0; background: var(--t-bg,#000000); color: var(--t-text,#ECEDEE); font-family: 'Manrope', 'Segoe UI', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    * { box-sizing: border-box; }
+    a { color: var(--t-blue,#338EF7); text-decoration: none; }
+    a:hover { color: var(--t-accsoft,#66AAF9); }
+    button { font-family: inherit; }
+    .composer { position: absolute; inset: 0; background: var(--t-bg,#000000); z-index: 40; display: flex; flex-direction: column; transform: translateY(100%); transition: transform .3s cubic-bezier(.32,.72,0,1); }
+    .composer.open { transform: translateY(0); }
+    .detail { position: absolute; inset: 0; background: var(--t-bg,#000000); z-index: 12; display: flex; flex-direction: column; transform: translateX(100%); visibility: hidden; transition: transform .28s cubic-bezier(.32,.72,0,1), visibility 0s linear .28s; }
+    .detail.open { transform: translateX(0); visibility: visible; transition: transform .28s cubic-bezier(.32,.72,0,1), visibility 0s; }
+    .c-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--t-muted2,#8E8E99); margin: 0 0 10px; display: block; }
+    .c-field { width: 100%; background: var(--t-card,#18181B); border: 1px solid rgba(var(--t-ink,255,255,255),0.1); border-radius: 12px; padding: 12px 14px; color: var(--t-text,#ECEDEE); font-family: 'Manrope', sans-serif; font-size: 14px; }
+    .c-chip { font-family: 'Manrope', sans-serif; display: inline-flex; align-items: center; padding: 8px 13px; border-radius: 999px; background: var(--t-card,#18181B); border: 1px solid rgba(var(--t-ink,255,255,255),0.08); color: var(--t-sec,#D4D4D8); font-size: 12.5px; font-weight: 600; cursor: pointer; }
+    .c-chip.on { background: rgba(0,111,238,0.16); border-color: rgba(0,111,238,.45); color: var(--t-accsoft,#8FC7FF); }
+    .c-chip.off { opacity: .4; cursor: default; }
+    .game-row { display: flex; align-items: center; gap: 12px; width: 100%; padding: 8px 4px; border: none; border-bottom: 1px solid rgba(var(--t-ink,255,255,255),0.06); background: transparent; color: var(--t-text,#ECEDEE); cursor: pointer; text-align: left; }
+    .toast { position: absolute; top: 14px; left: 50%; transform: translateX(-50%) translateY(-160%); background: var(--t-card3,#28282C); border: 1px solid rgba(var(--t-ink,255,255,255),0.16); color: var(--t-text,#ECEDEE); font-size: 12.5px; font-weight: 600; padding: 10px 16px; border-radius: 999px; z-index: 60; transition: transform .25s ease, opacity .25s ease; opacity: 0; pointer-events: none; white-space: nowrap; }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  </style>
+</helmet>
+<div style="position: relative; width: 390px; height: var(--scrH,776px); overflow: hidden; background: var(--t-bg,#000000);">
+
+<div style="width: 390px; height: var(--scrH,776px); overflow-y: auto; background: var(--t-bg,#000000); padding-bottom: 32px;">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 20px 16px 0;">
+    <div style="font-family: 'Space Grotesk', 'Segoe UI', sans-serif; font-size: 22px; font-weight: 700; letter-spacing: -0.02em;">Avaliações</div>
+    <button class="hit" type="button" onClick="{{openComposer}}" style="position: relative; height: 38px; padding: 0 14px 0 12px; border: none; border-radius: 12px; background: {{accent}}; color: #FFFFFF; font-size: 13.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 7px;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg>
+      Avaliar
+    </button>
+  </div>
+
+  <div style="padding: 14px 16px 0;">
+    <label style="display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 14px; background: var(--t-card,#18181B); border: 1px solid rgba(var(--t-ink,255,255,255),0.1); border-radius: 12px;">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--t-muted,#A1A1AA)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+      <input value="{{searchQuery}}" onInput="{{onSearch}}" placeholder="Buscar jogo pelo nome" aria-label="Buscar jogo" style="flex: 1; min-width: 0; background: transparent; border: none; outline: none; color: var(--t-text,#ECEDEE); font-family: 'Manrope', sans-serif; font-size: 14px;">
+      <sc-if value="{{hasSearch}}" hint-placeholder-val="{{false}}">
+        <button class="hit" type="button" onClick="{{clearSearch}}" aria-label="Limpar busca" style="position: relative; width: 24px; height: 24px; padding: 0; border: none; border-radius: 50%; background: var(--t-line,#3F3F46); color: var(--t-text,#ECEDEE); cursor: pointer; display: flex; align-items: center; justify-content: center;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M6 18L18 6"></path></svg>
+        </button>
+      </sc-if>
+    </label>
+  </div>
+
+  <sc-if value="{{hasSearch}}" hint-placeholder-val="{{false}}">
+    <div style="display: flex; flex-direction: column; padding: 14px 16px 0;">
+      <div style="font-size: 12px; font-weight: 700; color: var(--t-muted2,#8E8E99); padding-bottom: 6px;">{{searchCountLabel}}</div>
+      <sc-if value="{{noSearchResults}}" hint-placeholder-val="{{false}}">
+        <div style="padding: 40px 24px; text-align: center; font-size: 13px; line-height: 1.55; color: var(--t-muted2,#8E8E99);">Nenhum jogo encontrado. Confira a grafia ou tente outro nome.</div>
+      </sc-if>
+      <sc-for list="{{searchResults}}" as="g" hint-placeholder-count="5">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(var(--t-ink,255,255,255),0.08);">
+          <button type="button" onClick="{{g.onOpen}}" style="flex: 1; min-width: 0; padding: 0; border: none; background: transparent; color: inherit; font-family: inherit; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 12px;">
+            <div style="width: 44px; height: 58px; flex-shrink: 0; border-radius: 7px; background-color: {{g.bg}}; background-image: {{g.img}}; background-size: cover; background-position: center; box-shadow: inset 0px 0px 0px 1px rgba(var(--t-ink,255,255,255),0.08);"></div>
+            <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px;">
+              <div style="font-size: 14.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{g.title}}</div>
+              <div style="font-size: 12px; color: var(--t-muted,#A1A1AA);">{{g.kindLabel}}</div>
+              <div style="display: flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 600; color: var(--t-sec,#D4D4D8);">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="{{accent}}"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2Z"></path></svg>{{g.avgLabel}}<span style="font-weight: 500; color: var(--t-muted2,#8E8E99);">· {{g.countLabel}}</span>
+              </div>
+            </div>
+          </button>
+          <button class="hit" type="button" onClick="{{g.onRate}}" aria-label="Avaliar {{g.title}}" style="position: relative; flex-shrink: 0; height: 34px; padding: 0 12px; border-radius: 10px; border: 1px solid rgba(var(--t-ink,255,255,255),0.16); background: transparent; color: var(--t-text,#ECEDEE); font-size: 12.5px; font-weight: 700; cursor: pointer;">Avaliar</button>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{notSearching}}" hint-placeholder-val="{{true}}">
+  <div style="padding: 16px 16px 0;">
+    <div style="display: flex; gap: 4px; background: var(--t-card,#18181B); border-radius: 12px; padding: 4px;">
+      <button class="hit" type="button" onClick="{{pickDigital}}" style="position: relative; flex-grow: 1; height: 38px; border: none; border-radius: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; background: {{modeTabs.digital.bg}};">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{modeTabs.digital.iconColor}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="8" width="20" height="10" rx="5"></rect><line x1="7" y1="11" x2="7" y2="15"></line><line x1="5" y1="13" x2="9" y2="13"></line><circle cx="15" cy="11.5" r="1"></circle><circle cx="17.5" cy="14" r="1"></circle></svg>
+        <span style="font-size: 14px; font-weight: {{modeTabs.digital.weight}}; color: {{modeTabs.digital.textColor}};">Digital</span>
+      </button>
+      <button class="hit" type="button" onClick="{{pickAnalog}}" style="position: relative; flex-grow: 1; height: 38px; border: none; border-radius: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; background: {{modeTabs.analog.bg}};">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{modeTabs.analog.iconColor}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"></rect><circle cx="8" cy="8" r="1.4" fill="{{modeTabs.analog.iconColor}}" stroke="none"></circle><circle cx="16" cy="8" r="1.4" fill="{{modeTabs.analog.iconColor}}" stroke="none"></circle><circle cx="12" cy="12" r="1.4" fill="{{modeTabs.analog.iconColor}}" stroke="none"></circle><circle cx="8" cy="16" r="1.4" fill="{{modeTabs.analog.iconColor}}" stroke="none"></circle><circle cx="16" cy="16" r="1.4" fill="{{modeTabs.analog.iconColor}}" stroke="none"></circle></svg>
+        <span style="font-size: 14px; font-weight: {{modeTabs.analog.weight}}; color: {{modeTabs.analog.textColor}};">Analógico</span>
+      </button>
+    </div>
+  </div>
+
+  <div style="padding: 18px 16px 0;">
+    <div style="display: flex; gap: 22px; border-bottom: 1px solid rgba(var(--t-ink,255,255,255),0.1);">
+      <button type="button" onClick="{{pickTrending}}" style="padding: 0 0 10px; border: none; background: transparent; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+        <span style="font-size: 14px; font-weight: {{filterTabs.trending.weight}}; color: {{filterTabs.trending.color}};">Em alta</span>
+        <div style="height: 2px; width: 100%; border-radius: 2px; background: {{filterTabs.trending.bar}};"></div>
+      </button>
+      <button type="button" onClick="{{pickFollowing}}" style="padding: 0 0 10px; border: none; background: transparent; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+        <span style="font-size: 14px; font-weight: {{filterTabs.following.weight}}; color: {{filterTabs.following.color}};">Seguindo</span>
+        <div style="height: 2px; width: 100%; border-radius: 2px; background: {{filterTabs.following.bar}};"></div>
+      </button>
+      <button type="button" onClick="{{pickMine}}" style="padding: 0 0 10px; border: none; background: transparent; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+        <span style="display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: {{filterTabs.mine.weight}}; color: {{filterTabs.mine.color}};">
+          Minhas
+          <sc-if value="{{hasMineCount}}" hint-placeholder-val="{{false}}">
+            <span style="min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; background: rgba(0,111,238,0.18); color: var(--t-accsoft,#8FC7FF);">{{mineCount}}</span>
+          </sc-if>
+        </span>
+        <div style="height: 2px; width: 100%; border-radius: 2px; background: {{filterTabs.mine.bar}};"></div>
+      </button>
+    </div>
+  </div>
+
+  <sc-if value="{{showQuick}}" hint-placeholder-val="{{true}}">
+    <div style="margin: 16px 16px 0; background: var(--t-card,#18181B); border-radius: 14px; padding: 14px; box-shadow: inset 0px 0px 1px 0px rgba(var(--t-ink,255,255,255),0.15);">
+      <div style="display: flex; flex-direction: column; gap: 2px; margin-bottom: 12px;">
+        <div style="font-family: 'Space Grotesk', 'Segoe UI', sans-serif; font-size: 14.5px; font-weight: 600;">Jogou algo recentemente?</div>
+        <div style="font-size: 12px; color: var(--t-muted,#A1A1AA);">Toque em um jogo para avaliar.</div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px;">
+        <sc-for list="{{quickGames}}" as="g" hint-placeholder-count="4">
+          <button type="button" onClick="{{g.onPick}}" aria-label="Avaliar {{g.title}}" style="display: flex; flex-direction: column; gap: 6px; padding: 0; border: none; background: transparent; cursor: pointer; text-align: left;">
+            <div style="aspect-ratio: 3 / 4; border-radius: 8px; background-color: {{g.bg}}; background-image: {{g.img}}; background-size: cover; background-position: center; box-shadow: inset 0px 0px 0px 1px rgba(var(--t-ink,255,255,255),0.08); position: relative;">
+              <span style="position: absolute; right: 5px; bottom: 5px; width: 20px; height: 20px; border-radius: 50%; background: {{accent}}; display: flex; align-items: center; justify-content: center;">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--t-white,#FFFFFF)" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+              </span>
+            </div>
+            <div style="font-size: 11px; font-weight: 600; color: var(--t-sec,#D4D4D8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{g.title}}</div>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{showEmptyMine}}" hint-placeholder-val="{{false}}">
+    <div style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; padding: 56px 36px 0;">
+      <div style="width: 64px; height: 64px; border-radius: 50%; background: var(--t-card,#18181B); border: 1px solid rgba(var(--t-ink,255,255,255),0.08); display: flex; align-items: center; justify-content: center; color: var(--t-muted2,#8E8E99);">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2Z"></path></svg>
+      </div>
+      <div style="font-family: 'Space Grotesk', 'Segoe UI', sans-serif; font-size: 18px; font-weight: 700;">{{emptyMineTitle}}</div>
+      <div style="font-size: 13px; line-height: 1.55; color: var(--t-muted,#A1A1AA);">Conte para a comunidade o que achou. Sua nota ajuda outras pessoas a escolherem o que jogar.</div>
+      <button type="button" onClick="{{openComposer}}" style="margin-top: 8px; height: 46px; padding: 0 22px; border: none; border-radius: 12px; background: {{accent}}; color: #FFFFFF; font-size: 14px; font-weight: 700; cursor: pointer;">Escrever avaliação</button>
+    </div>
+  </sc-if>
+
+  <div style="display: flex; flex-direction: column; padding: 4px 16px 0;">
+    <sc-for list="{{reviews}}" as="r" hint-placeholder-count="3">
+      <div role="button" tabindex="0" aria-label="Abrir avaliação de {{r.reviewer}} sobre {{r.game}}" onClick="{{r.openDetail}}" style="display: flex; gap: 12px; padding: 16px 0; border-bottom: 1px solid rgba(var(--t-ink,255,255,255),0.08); cursor: pointer;">
+        <button type="button" onClick="{{r.openGame}}" aria-label="Abrir página de {{r.game}}" style="width: 64px; height: 86px; padding: 0; border: none; flex-shrink: 0; cursor: pointer; border-radius: 8px; background-color: {{r.bg}}; background-image: {{r.img}}; background-size: cover; background-position: center; box-shadow: inset 0px 0px 0px 1px rgba(var(--t-ink,255,255,255),0.08);"></button>
+        <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 8px; min-width: 0;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button type="button" onClick="{{r.openAuthor}}" aria-label="Ver perfil de {{r.reviewer}}" style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; padding: 0; border: none; background: transparent; cursor: pointer; text-align: left; color: inherit; font-family: inherit;">
+            <svg width="28" height="28" viewBox="0 0 24 24" shape-rendering="crispEdges" style="flex-shrink: 0; border-radius: 6px;">
+              <rect x="0" y="0" width="24" height="24" fill="{{r.avBg}}"></rect>
+              <rect x="4" y="2" width="16" height="8" fill="{{r.avBody}}"></rect>
+              <rect x="0" y="6" width="4" height="10" fill="{{r.avBody}}"></rect>
+              <rect x="20" y="6" width="4" height="10" fill="{{r.avBody}}"></rect>
+              <rect x="6" y="8" width="12" height="10" fill="{{r.avBody}}"></rect>
+              <rect x="8" y="12" width="3" height="3" fill="{{r.avAccent}}"></rect>
+              <rect x="13" y="12" width="3" height="3" fill="{{r.avAccent}}"></rect>
+              <rect x="9" y="17" width="6" height="2" fill="{{r.avAccent}}"></rect>
+            <image href="{{r.avUri}}" x="0" y="0" width="24" height="24"></image></svg>
+            <div style="display: flex; flex-direction: column; min-width: 0; flex-grow: 1;">
+              <div style="font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px;"><span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{r.reviewer}}</span><sc-if value="{{r.isFriend}}" hint-placeholder-val="{{false}}"><span style="height: 17px; padding: 0 6px; border-radius: 999px; display: inline-flex; align-items: center; font-size: 11px; font-weight: 700; background: rgba(0,111,238,0.16); color: var(--t-accsoft,#8FC7FF); flex-shrink: 0;">Amigo</span></sc-if></div>
+              <div style="font-size: 11px; color: var(--t-muted2,#8E8E99); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{r.handleLabel}}</div>
+            </div>
+            </button>
+            <sc-if value="{{r.isMine}}" hint-placeholder-val="{{false}}">
+              <span style="flex-shrink: 0; font-size: 11px; font-weight: 500; color: var(--t-muted,#A1A1AA);">{{r.whenLabel}}</span>
+            </sc-if>
+          </div>
+          <button type="button" onClick="{{r.openGame}}" style="align-self: flex-start; max-width: 100%; padding: 0; border: none; background: transparent; cursor: pointer; display: flex; align-items: center; gap: 5px; color: var(--t-text,#ECEDEE); font-size: 14px; font-weight: 700; text-align: left;">
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{r.game}}</span>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--t-faint,#71717A)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M9 18l6-6-6-6"></path></svg>
+          </button>
+          <div style="display: flex; gap: 2px;">
+            <sc-for list="{{r.stars}}" as="s" hint-placeholder-count="5">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="{{s.fill}}"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2Z"></path></svg>
+            </sc-for>
+          </div>
+          <sc-if value="{{r.hasText}}" hint-placeholder-val="{{true}}">
+            <div style="font-size: 13px; line-height: 1.4; color: var(--t-sec,#D4D4D8); text-wrap: pretty; overflow-wrap: anywhere;">{{r.text}}</div>
+          </sc-if>
+          <sc-if value="{{r.hasPlayedMeta}}" hint-placeholder-val="{{false}}">
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-size: 11.5px; color: var(--t-muted2,#8A8A94);">
+              <sc-if value="{{r.hasPlayedOn}}" hint-placeholder-val="{{true}}"><span style="display: inline-flex; align-items: center; gap: 5px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 11h18"></path></svg>{{r.playedShort}}</span></sc-if>
+              <sc-if value="{{r.hasWith}}" hint-placeholder-val="{{true}}"><span style="display: inline-flex; align-items: center; gap: 6px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg><span style="display: inline-flex; padding-right: 5px;"><sc-for list="{{r.withAvs}}" as="w" hint-placeholder-count="2"><img src="{{w.uri}}" alt="" width="20" height="20" style="display: block; border-radius: 6px; image-rendering: pixelated; margin-right: -5px; box-shadow: 0 0 0 2px var(--t-bg,#000000);"></sc-for></span></span></sc-if>
+            </div>
+          </sc-if>
+          <sc-if value="{{r.hasTags}}" hint-placeholder-val="{{false}}">
+            <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+              <sc-for list="{{r.tagChips}}" as="t" hint-placeholder-count="2">
+                <span style="height: 22px; display: flex; align-items: center; padding: 0 8px; border-radius: 999px; background: var(--t-card3,#27272A); font-size: 11px; font-weight: 600; color: var(--t-sec,#D4D4D8);">{{t.label}}</span>
+              </sc-for>
+            </div>
+          </sc-if>
+          <div style="display: flex; align-items: center; gap: 16px; padding-top: 2px;">
+            <button type="button" onClick="{{r.toggleLike}}" style="display: flex; align-items: center; gap: 5px; border: none; background: transparent; cursor: pointer; padding: 0;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="{{r.likeFill}}" stroke="{{r.likeStroke}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35Z"></path></svg>
+              <span style="font-size: 12px; font-weight: 600; color: var(--t-muted,#A1A1AA);">{{r.likeCount}}</span>
+            </button>
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--t-muted,#A1A1AA)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+              <span style="font-size: 12px; font-weight: 600; color: var(--t-muted,#A1A1AA);">{{r.comments}}</span>
+            </div>
+            <sc-if value="{{r.isMine}}" hint-placeholder-val="{{false}}">
+              <button type="button" onClick="{{r.onDelete}}" aria-label="Excluir avaliação" style="margin-left: auto; display: flex; align-items: center; gap: 5px; border: none; background: transparent; cursor: pointer; padding: 0; color: var(--t-muted2,#8E8E99); font-size: 12px; font-weight: 600;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"></path></svg>
+                Excluir
+              </button>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+  </sc-if>
+
+</div>
+
+<!-- DETALHE DA AVALIAÇÃO -->
+<div class="{{detailClass}}" role="dialog" aria-label="Avaliação">
+  <button class="hit" type="button" onClick="{{closeDetail}}" aria-label="Voltar" style="position: absolute; left: 16px; top: 14px; z-index: 5; width: 38px; height: 38px; padding: 0; border: none; border-radius: 12px; background: rgba(0,0,0,0.55); color: #ECEDEE; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg>
+  </button>
+  <div style="flex: 1; min-height: 0; overflow-y: auto;">
+    <div style="--t-bg:#000000; --t-bg2:#09090B; --t-bg2rgb:9,9,11; --t-card:#18181B; --t-card2:#212124; --t-text:#ECEDEE; --t-sec:#D4D4D8; --t-muted:#A1A1AA; --t-muted2:#8E8E99; --t-faint:#71717A; --t-white:#FFFFFF; --t-ink:255,255,255; --t-accsoft:#8FC7FF; --t-amber:#F5C451; --t-amber2:#F5A524; --t-pink:#F38CB0; --t-mint:#5FE3A1; --t-cyan:#22D3EE; --t-violet:#C4A7FF; color: #ECEDEE; position: relative; height: 250px; background-color: {{dr.bg}}; background-image: {{dr.img}}; background-size: cover; background-position: center 30%;">
+      <div style="position: absolute; inset: 0; background-image: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0.55) 62%, #000000 100%);"></div>
+      <div style="position: absolute; left: 16px; right: 16px; bottom: 12px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
+        <span style="height: 22px; padding: 0 10px; border-radius: 999px; display: inline-flex; align-items: center; font-size: 11px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; background: rgba(0,0,0,0.62); color: {{dKind.color}}; box-shadow: inset 0 0 0 1px {{dKind.ring}};">
+          {{dKind.label}}
+        </span>
+        <span style="font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 700; line-height: 1.1; letter-spacing: -0.01em;">{{dr.game}}</span>
+      </div>
+    </div>
+
+    <div style="padding: 14px 16px 18px;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <button type="button" onClick="{{detailOpenAuthor}}" aria-label="Ver perfil de {{dr.reviewer}}" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; padding: 0; border: none; background: transparent; cursor: pointer; color: inherit; font-family: inherit; text-align: left;">
+          <svg width="34" height="34" viewBox="0 0 24 24" shape-rendering="crispEdges" style="flex-shrink: 0; border-radius: 10px; display: block;"><rect x="0" y="0" width="24" height="24" fill="{{dr.avBg}}"></rect><rect x="4" y="2" width="16" height="8" fill="{{dr.avBody}}"></rect><rect x="0" y="6" width="4" height="10" fill="{{dr.avBody}}"></rect><rect x="20" y="6" width="4" height="10" fill="{{dr.avBody}}"></rect><rect x="6" y="8" width="12" height="10" fill="{{dr.avBody}}"></rect><rect x="8" y="12" width="3" height="3" fill="{{dr.avAccent}}"></rect><rect x="13" y="12" width="3" height="3" fill="{{dr.avAccent}}"></rect><rect x="9" y="17" width="6" height="2" fill="{{dr.avAccent}}"></rect><image href="{{dr.avUri}}" x="0" y="0" width="24" height="24"></image></svg>
+          <span style="min-width: 0; display: flex; flex-direction: column; gap: 1px;">
+            <span style="display: flex; align-items: center; gap: 7px;"><span style="font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{dr.reviewer}}</span><sc-if value="{{dr.isFriend}}" hint-placeholder-val="{{false}}"><span style="flex: none; height: 17px; padding: 0 6px; border-radius: 999px; display: inline-flex; align-items: center; font-size: 11px; font-weight: 800; background: rgba(0,111,238,0.18); color: var(--t-accsoft,#8FC7FF);">AMIGO</span></sc-if></span>
+            <span style="font-size: 12px; color: var(--t-muted2,#8E8E99); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{dr.handleLabel}}</span>
+          </span>
+        </button>
+        <div style="flex: none; display: flex; gap: 2px;">
+          <sc-for list="{{dr.bigStars}}" as="s" hint-placeholder-count="5">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="{{s.fill}}"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2Z"></path></svg>
+          </sc-for>
+        </div>
+      </div>
+      <sc-if value="{{dr.hasText}}" hint-placeholder-val="{{true}}">
+        <p style="margin: 14px 0 0; font-size: 14px; line-height: 1.55; color: var(--t-text,#E4E4E7); text-wrap: pretty; overflow-wrap: anywhere;">{{dr.text}}</p>
+      </sc-if>
+      <sc-if value="{{hasPlayedMeta}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-top: 12px; font-size: 12px; color: var(--t-muted2,#8A8A94);">
+          <sc-if value="{{dMeta.hasPlayedOn}}" hint-placeholder-val="{{true}}">
+            <span style="display: inline-flex; align-items: center; gap: 6px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 11h18"></path></svg>
+              {{dMeta.playedLabel}}
+            </span>
+          </sc-if>
+          <sc-if value="{{dMeta.hasWith}}" hint-placeholder-val="{{true}}">
+            <span style="display: inline-flex; align-items: center; gap: 7px;" aria-label="Jogou com {{dMeta.withLabel}}">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              <span style="display: inline-flex; padding-right: 5px;">
+                <sc-for list="{{dMeta.withAvs}}" as="w" hint-placeholder-count="2">
+                  <img src="{{w.uri}}" alt="" width="20" height="20" style="display: block; border-radius: 6px; image-rendering: pixelated; margin-right: -5px; box-shadow: 0 0 0 2px var(--t-bg,#000000);">
+                </sc-for>
+              </span>
+            </span>
+          </sc-if>
+        </div>
+      </sc-if>
+      <button class="hit" type="button" onClick="{{detailOpenGame}}" style="position: relative; margin-top: 16px; height: 32px; padding: 0 8px 0 14px; border: 1px solid rgba(var(--t-ink,255,255,255),0.14); border-radius: 999px; background: var(--t-card2,#212124); color: var(--t-text,#ECEDEE); font-family: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+        <span>Ver página do jogo</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>
+      </button>
+      <div style="display: flex; align-items: center; gap: 20px; margin-top: 16px; padding: 12px 0; border-top: 1px solid rgba(var(--t-ink,255,255,255),0.08); border-bottom: 1px solid rgba(var(--t-ink,255,255,255),0.08);">
+        <button type="button" onClick="{{dr.toggleLike}}" aria-label="Curtir" style="display: flex; align-items: center; gap: 6px; padding: 0; border: none; background: transparent; cursor: pointer; color: var(--t-muted,#A1A1AA); font-family: inherit; font-size: 13px; font-weight: 600;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="{{dr.likeFill}}" stroke="{{dr.likeStroke}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
+          {{dr.likeCount}}
+        </button>
+        <span style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--t-muted,#A1A1AA);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--t-muted,#A1A1AA)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+          {{detail.total}}
+        </span>
+      </div>
+      <sc-if value="{{hasLikedBy}}" hint-placeholder-val="{{true}}">
+        <div style="padding-top: 12px; font-size: 12px; color: var(--t-muted,#A1A1AA);">Curtida por <b style="color: var(--t-text,#ECEDEE); font-weight: 700;">{{likedByLabel}}</b></div>
+      </sc-if>
+    </div>
+    <div style="padding: 16px 16px 24px; ">
+      <div style="font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--t-muted2,#8E8E99); margin-bottom: 4px;">{{detail.totalLabel}}</div>
+      <sc-if value="{{hasDComments}}" hint-placeholder-val="{{true}}">
+        <div style="display: flex; flex-direction: column;">
+          <sc-for list="{{dComments}}" as="c" hint-placeholder-count="3">
+            <div style="display: flex; gap: 10px; padding: 14px 0; border-bottom: 1px solid rgba(var(--t-ink,255,255,255),0.06);">
+              <button class="hit" type="button" onClick="{{c.openAuthor}}" aria-label="Ver perfil de {{c.reviewer}}" style="position: relative; flex: none; padding: 0; border: none; background: transparent; cursor: pointer; height: 32px;"><svg width="32" height="32" viewBox="0 0 24 24" shape-rendering="crispEdges" style="flex-shrink: 0; border-radius: 9px; display: block;"><rect x="0" y="0" width="24" height="24" fill="{{c.avBg}}"></rect><rect x="4" y="2" width="16" height="8" fill="{{c.avBody}}"></rect><rect x="0" y="6" width="4" height="10" fill="{{c.avBody}}"></rect><rect x="20" y="6" width="4" height="10" fill="{{c.avBody}}"></rect><rect x="6" y="8" width="12" height="10" fill="{{c.avBody}}"></rect><rect x="8" y="12" width="3" height="3" fill="{{c.avAccent}}"></rect><rect x="13" y="12" width="3" height="3" fill="{{c.avAccent}}"></rect><rect x="9" y="17" width="6" height="2" fill="{{c.avAccent}}"></rect><image href="{{c.avUri}}" x="0" y="0" width="24" height="24"></image></svg></button>
+              <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px;">
+                <div style="display: flex; align-items: baseline; gap: 8px;"><span style="font-size: 13px; font-weight: 700;">{{c.reviewer}}</span><span style="font-size: 11.5px; color: var(--t-muted2,#8E8E99);">{{c.when}}</span></div>
+                <div style="font-size: 14px; line-height: 1.45; color: var(--t-sec,#D4D4D8); text-wrap: pretty; overflow-wrap: anywhere;">{{c.text}}</div>
+              </div>
+              <button class="hit" type="button" onClick="{{c.onLike}}" aria-label="Curtir comentário" style="position: relative; flex: none; align-self: flex-start; width: 32px; height: 32px; padding: 0; border: none; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="{{c.likeFill}}" stroke="{{c.likeStroke}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
+              </button>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{detail.hiddenMore}}" hint-placeholder-val="{{false}}">
+        <div style="padding-top: 14px; font-size: 13px; font-weight: 700; color: var(--t-blue,{{accent}});">{{detail.moreLabel}}</div>
+      </sc-if>
+    </div>
+  </div>
+  <div style="flex: none; display: flex; align-items: center; gap: 10px; padding: 10px 16px 14px; background: var(--t-bg2,#09090B); border-top: 1px solid rgba(var(--t-ink,255,255,255),0.08);">
+    <svg width="32" height="32" viewBox="0 0 24 24" shape-rendering="crispEdges" style="flex: none; border-radius: 9px;"><rect x="0" y="0" width="24" height="24" fill="#1F2A24"></rect><rect x="4" y="2" width="16" height="8" fill="#3E7D5A"></rect><rect x="0" y="6" width="4" height="10" fill="#3E7D5A"></rect><rect x="20" y="6" width="4" height="10" fill="#3E7D5A"></rect><rect x="6" y="8" width="12" height="10" fill="#3E7D5A"></rect><rect x="8" y="12" width="3" height="3" fill="#0B0F0D"></rect><rect x="13" y="12" width="3" height="3" fill="#0B0F0D"></rect><rect x="9" y="17" width="6" height="2" fill="#0B0F0D"></rect><image href="{{myAvUri}}" x="0" y="0" width="24" height="24"></image></svg>
+    <input type="text" value="{{draft}}" onInput="{{onDraft}}" onKeyDown="{{onDraftKey}}" placeholder="Escreva um comentário..." aria-label="Escrever comentário" style="flex: 1; min-width: 0; height: 40px; padding: 0 14px; border-radius: 12px; border: 1px solid rgba(var(--t-ink,255,255,255),0.1); background: var(--t-card,#18181B); color: var(--t-text,#ECEDEE); font-family: inherit; font-size: 14px; outline: none;">
+    <button type="button" onClick="{{sendComment}}" aria-label="Enviar comentário" style="{{sendStyle}}">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13"></path><path d="M22 2 15 22l-4-9-9-4 20-7Z"></path></svg>
+    </button>
+  </div>
+</div>
+
+<!-- COMPOSITOR -->
+<div class="{{composerClass}}" role="dialog" aria-label="Nova avaliação" data-sheet="composer" onTouchStart="{{dnStart}}" onTouchMove="{{dnMove}}" onTouchEnd="{{dnEnd}}" onTouchCancel="{{dnEnd}}">
+  <div style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid rgba(var(--t-ink,255,255,255),0.08); flex: none;">
+    <button class="hit" type="button" onClick="{{closeComposer}}" aria-label="Fechar" style="position: relative; width: 38px; height: 38px; padding: 0; border-radius: 11px; border: 1px solid rgba(var(--t-ink,255,255,255),0.08); background: var(--t-card2,#212124); color: var(--t-sec,#D4D4D8); cursor: pointer; display: flex; align-items: center; justify-content: center;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M6 18L18 6"></path></svg>
+    </button>
+    <div style="flex: 1; font-family: 'Space Grotesk', 'Segoe UI', sans-serif; font-size: 18px; font-weight: 700;">Nova avaliação</div>
+  </div>
+
+  <div style="flex: 1; overflow-y: auto; padding: 18px 16px 12px; display: flex; flex-direction: column; gap: 24px;">
+
+    <div>
+      <span class="c-label">Jogo</span>
+
+      <sc-if value="{{hasGame}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; align-items: center; gap: 12px; background: var(--t-card,#18181B); border-radius: 14px; padding: 12px; box-shadow: inset 0px 0px 1px 0px rgba(var(--t-ink,255,255,255),0.15);">
+          <div style="width: 48px; height: 64px; flex-shrink: 0; border-radius: 8px; background-color: {{cGame.bg}}; background-image: {{cGame.img}}; background-size: cover; background-position: center;"></div>
+          <div style="flex: 1; min-width: 0;">
+            <div style="font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{cGame.title}}</div>
+            <div style="font-size: 12px; color: var(--t-muted,#A1A1AA); margin-top: 2px;">{{cGame.kindLabel}}</div>
+          </div>
+          <button class="hit" type="button" onClick="{{clearGame}}" style="position: relative; height: 34px; padding: 0 12px; border-radius: 10px; border: 1px solid rgba(var(--t-ink,255,255,255),0.16); background: transparent; color: var(--t-text,#ECEDEE); font-size: 12.5px; font-weight: 600; cursor: pointer;">Trocar</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{noGame}}" hint-placeholder-val="{{true}}">
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; gap: 4px; background: var(--t-card,#18181B); border-radius: 12px; padding: 4px;">
+            <button class="hit" type="button" onClick="{{cPickDigital}}" style="position: relative; flex-grow: 1; height: 34px; border: none; border-radius: 9px; cursor: pointer; background: {{cModeTabs.digital.bg}}; color: {{cModeTabs.digital.color}}; font-size: 13px; font-weight: {{cModeTabs.digital.weight}};">Digital</button>
+            <button class="hit" type="button" onClick="{{cPickAnalog}}" style="position: relative; flex-grow: 1; height: 34px; border: none; border-radius: 9px; cursor: pointer; background: {{cModeTabs.analog.bg}}; color: {{cModeTabs.analog.color}}; font-size: 13px; font-weight: {{cModeTabs.analog.weight}};">Analógico</button>
+          </div>
+          <input class="c-field" aria-label="Buscar jogo" placeholder="Buscar jogo" value="{{cQuery}}" onInput="{{onQuery}}">
+          <div style="display: flex; flex-direction: column;">
+            <sc-for list="{{gameResults}}" as="g" hint-placeholder-count="5">
+              <button type="button" class="game-row" onClick="{{g.onPick}}">
+                <div style="width: 36px; height: 48px; flex-shrink: 0; border-radius: 6px; background-color: {{g.bg}}; background-image: {{g.img}}; background-size: cover; background-position: center; box-shadow: inset 0px 0px 0px 1px rgba(var(--t-ink,255,255,255),0.08);"></div>
+                <span style="flex: 1; font-size: 14px; font-weight: 600;">{{g.title}}</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--t-faint,#71717A)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+              </button>
+            </sc-for>
+            <sc-if value="{{noResults}}" hint-placeholder-val="{{false}}">
+              <div style="padding: 16px 4px; font-size: 13px; color: var(--t-muted2,#8E8E99);">Nenhum jogo encontrado nesta categoria.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+
+    <div>
+      <span class="c-label">Sua nota</span>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="display: flex; gap: 6px;">
+          <sc-for list="{{starPicks}}" as="s" hint-placeholder-count="5">
+            <button type="button" onClick="{{s.onPick}}" aria-label="{{s.label}}" style="padding: 0; border: none; background: transparent; cursor: pointer; display: block;">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="{{s.fill}}" stroke="{{s.stroke}}" stroke-width="1.5" stroke-linejoin="round"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2Z"></path></svg>
+            </button>
+          </sc-for>
+        </div>
+        <div style="font-size: 14px; font-weight: 700; color: {{ratingColor}};">{{ratingLabel}}</div>
+      </div>
+    </div>
+
+    <div>
+      <label for="c-text" class="c-label">O que achou? <span style="text-transform: none; letter-spacing: 0; font-weight: 500;">(opcional)</span></label>
+      <textarea id="c-text" class="c-field" rows="5" placeholder="Conte como foi a experiência, sem spoilers." value="{{cText}}" onInput="{{onText}}" style="resize: none; line-height: 1.5;"></textarea>
+      <div style="text-align: right; font-size: 11.5px; color: var(--t-muted2,#8E8E99); margin-top: 6px;">{{textCount}}/280</div>
+    </div>
+
+    <div>
+      <span class="c-label">Quando você jogou? <span style="text-transform: none; letter-spacing: 0; font-weight: 500;">(opcional)</span></span>
+      <div style="display: flex; gap: 8px;">
+        <button type="button" onClick="{{openDatePicker}}" aria-label="Escolher data" style="flex: 1; min-width: 0; height: 46px; padding: 0 14px; border-radius: 12px; border: 1px solid rgba(var(--t-ink,255,255,255),0.1); background: var(--t-card,#18181B); color: var(--t-text,#ECEDEE); font-family: inherit; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; text-align: left;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--t-muted,#A1A1AA)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none;"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 11h18"></path></svg>
+          <span style="flex: 1; min-width: 0; color: {{dateColor}};">{{dateLabel}}</span>
+        </button>
+        <sc-if value="{{hasDate}}" hint-placeholder-val="{{false}}">
+          <button type="button" onClick="{{clearDate}}" aria-label="Remover data" style="flex: none; width: 46px; height: 46px; padding: 0; border-radius: 12px; border: 1px solid rgba(var(--t-ink,255,255,255),0.1); background: var(--t-card,#18181B); color: var(--t-muted,#A1A1AA); cursor: pointer; display: flex; align-items: center; justify-content: center;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+        </sc-if>
+      </div>
+    </div>
+
+    <div>
+      <span class="c-label">Jogou com alguém? <span style="text-transform: none; letter-spacing: 0; font-weight: 500;">(opcional)</span></span>
+      <button type="button" onClick="{{openFriendPicker}}" aria-label="Escolher amigos" style="flex: 1; min-width: 0; height: 46px; padding: 0 14px; border-radius: 12px; border: 1px solid rgba(var(--t-ink,255,255,255),0.1); background: var(--t-card,#18181B); color: var(--t-text,#ECEDEE); font-family: inherit; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; text-align: left;" >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--t-muted,#A1A1AA)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none;"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        <span style="flex: 1; min-width: 0; color: {{friendBtnColor}};">{{friendBtnLabel}}</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--t-faint,#71717A)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none;"><path d="M9 18l6-6-6-6"></path></svg>
+      </button>
+      <sc-if value="{{hasWith}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;">
+          <sc-for list="{{withChips}}" as="w" hint-placeholder-count="2">
+            <span style="height: 32px; padding: 0 4px 0 5px; border-radius: 999px; display: inline-flex; align-items: center; gap: 7px; background: var(--t-card,#18181B); border: 1px solid rgba(var(--t-ink,255,255,255),0.1); font-size: 13px; font-weight: 600; color: var(--t-text,#ECEDEE);">
+              <img src="{{w.uri}}" alt="" width="22" height="22" style="display: block; border-radius: 7px; image-rendering: pixelated;">
+              {{w.first}}
+              <button class="hit" type="button" onClick="{{w.onRemove}}" aria-label="Remover {{w.first}}" style="position: relative; width: 24px; height: 24px; padding: 0; border: none; border-radius: 999px; background: transparent; color: var(--t-muted,#A1A1AA); cursor: pointer; display: flex; align-items: center; justify-content: center;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+            </span>
+          </sc-for>
+        </div>
+      </sc-if>
+    </div>
+
+  </div>
+
+  <div style="flex: none; padding: 12px 16px 16px; border-top: 1px solid rgba(var(--t-ink,255,255,255),0.08);">
+    <button type="button" onClick="{{publish}}" style="{{publishStyle}}">{{publishLabel}}</button>
+  </div>
+</div>
+
+<sc-if value="{{datePickerOpen}}" hint-placeholder-val="{{false}}">
+  <div role="dialog" aria-label="Escolher data" style="position: absolute; inset: 0; z-index: 60; display: flex; flex-direction: column; justify-content: flex-end;">
+    <div onClick="{{closePicker}}" style="position: absolute; inset: 0; background: rgba(0,0,0,0.62);"></div>
+    <div style="position: relative; background: var(--t-bg2,#111113); border-radius: 22px 22px 0 0; padding: 10px 16px 18px; box-shadow: 0 -1px 0 rgba(var(--t-ink,255,255,255),0.08);">
+      <div style="display: flex; justify-content: center; padding-bottom: 8px;"><div style="width: 34px; height: 4px; border-radius: 999px; background: rgba(var(--t-ink,255,255,255),0.16);"></div></div>
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 4px 0 10px;">
+        <button type="button" onClick="{{calPrev}}" aria-label="Mês anterior" style="width: 40px; height: 40px; padding: 0; border: none; border-radius: 12px; background: var(--t-card2,#212124); color: var(--t-text,#ECEDEE); cursor: pointer; display: flex; align-items: center; justify-content: center;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg></button>
+        <span style="font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700; text-transform: capitalize;">{{calMonthLabel}}</span>
+        <button type="button" onClick="{{calNext}}" aria-label="Próximo mês" style="{{calNextStyle}}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></button>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; text-align: center; padding-bottom: 4px;">
+        <sc-for list="{{calWeek}}" as="d" hint-placeholder-count="7"><span style="font-size: 11px; font-weight: 700; color: var(--t-muted2,#8E8E99); padding: 6px 0;">{{d.l}}</span></sc-for>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px;">
+        <sc-for list="{{calCells}}" as="d" hint-placeholder-count="35">
+          <button type="button" onClick="{{d.onPick}}" aria-label="{{d.aria}}" style="{{d.style}}">{{d.label}}</button>
+        </sc-for>
+      </div>
+      <div style="display: flex; gap: 10px; padding-top: 14px;">
+        <button type="button" onClick="{{clearDateClose}}" style="flex: 1; height: 44px; border: none; border-radius: 12px; background: var(--t-card2,#212124); color: var(--t-text,#ECEDEE); font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer;">Limpar</button>
+        <button type="button" onClick="{{pickToday}}" style="flex: 1; height: 44px; border: none; border-radius: 12px; background: var(--t-card2,#212124); color: var(--t-text,#ECEDEE); font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer;">Hoje</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{friendPickerOpen}}" hint-placeholder-val="{{false}}">
+  <div role="dialog" aria-label="Jogou com quem?" style="position: absolute; inset: 0; z-index: 60; display: flex; flex-direction: column; justify-content: flex-end;">
+    <div onClick="{{closePicker}}" style="position: absolute; inset: 0; background: rgba(0,0,0,0.62);"></div>
+    <div style="position: relative; height: 600px; max-height: 92%; background: var(--t-bg2,#111113); border-radius: 22px 22px 0 0; display: flex; flex-direction: column; box-shadow: 0 -1px 0 rgba(var(--t-ink,255,255,255),0.08);">
+      <div style="flex: none; display: flex; justify-content: center; padding-top: 10px;"><div style="width: 34px; height: 4px; border-radius: 999px; background: rgba(var(--t-ink,255,255,255),0.16);"></div></div>
+      <div style="flex: none; display: flex; align-items: center; justify-content: space-between; padding: 12px 16px 8px;">
+        <span style="font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700;">Jogou com quem?</span>
+        <span style="font-size: 12.5px; color: var(--t-muted,#A1A1AA);">{{friendCountLabel}}</span>
+      </div>
+      <div style="flex: none; padding: 4px 16px 10px;">
+        <label style="height: 44px; border-radius: 12px; background: var(--t-card,#18181B); border: 1px solid rgba(var(--t-ink,255,255,255),0.1); display: flex; align-items: center; gap: 10px; padding: 0 12px; color: var(--t-muted,#A1A1AA);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none;"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+          <input type="search" value="{{fQuery}}" onInput="{{onFQuery}}" placeholder="Buscar amigo pelo nome" aria-label="Buscar amigo" style="flex: 1; min-width: 0; height: 100%; border: none; outline: none; background: transparent; color: var(--t-text,#ECEDEE); font-family: inherit; font-size: 14px;">
+        </label>
+      </div>
+      <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 0 16px;">
+        <sc-for list="{{friendRows}}" as="f" hint-placeholder-count="5">
+          <button type="button" role="checkbox" aria-checked="{{f.on}}" onClick="{{f.onPick}}" style="display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 0; border: none; border-bottom: 1px solid rgba(var(--t-ink,255,255,255),0.06); background: transparent; color: inherit; font-family: inherit; text-align: left; cursor: pointer;">
+            <img src="{{f.uri}}" alt="" width="38" height="38" style="display: block; border-radius: 11px; image-rendering: pixelated; flex: none;">
+            <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px;"><span style="font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{f.name}}</span><span style="font-size: 12px; color: var(--t-muted2,#8E8E99);">{{f.handle}}</span></span>
+            <span style="{{f.boxStyle}}"><sc-if value="{{f.isOn}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--t-white,#FFFFFF)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"></path></svg></sc-if></span>
+          </button>
+        </sc-for>
+        <sc-if value="{{noFriendResults}}" hint-placeholder-val="{{false}}">
+          <div style="padding: 36px 8px; text-align: center; font-size: 13.5px; line-height: 1.45; color: var(--t-muted2,#8E8E99);">{{noFriendText}}</div>
+        </sc-if>
+      </div>
+      <div style="flex: none; padding: 12px 16px 16px; border-top: 1px solid rgba(var(--t-ink,255,255,255),0.08);">
+        <button type="button" onClick="{{closePicker}}" style="width: 100%; height: 48px; border: none; border-radius: 14px; background: {{accent}}; color: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 800; cursor: pointer;">{{friendDoneLabel}}</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{cfOpen}}" hint-placeholder-val="{{false}}">
+  <div onClick="{{cfNo}}" style="position: absolute; inset: 0; z-index: 90; background: rgba(0,0,0,0.66);"></div>
+  <div role="alertdialog" aria-modal="true" aria-label="{{cfTitle}}" style="position: absolute; left: 24px; right: 24px; top: 50%; transform: translateY(-50%); z-index: 91; background: var(--t-card,#18181B); border: 1px solid rgba(var(--t-ink,255,255,255),0.16); border-radius: 20px; padding: 22px 18px 16px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 24px 60px rgba(0,0,0,0.6); font-family: 'Manrope', 'Segoe UI', system-ui, sans-serif; color: var(--t-text,#ECEDEE);">
+    <div style="font-family: 'Space Grotesk', 'Segoe UI', sans-serif; font-size: 18px; font-weight: 700;">{{cfTitle}}</div>
+    <div style="font-size: 13.5px; line-height: 1.55; color: var(--t-muted,#A1A1AA);">{{cfText}}</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px;">
+      <button type="button" onClick="{{cfNo}}" style="height: 46px; border: none; border-radius: 12px; background: var(--t-card3,#27272A); color: var(--t-text,#ECEDEE); font-size: 14px; font-weight: 600; cursor: pointer;">Cancelar</button>
+      <button type="button" onClick="{{cfYes}}" style="height: 46px; border: none; border-radius: 12px; background: #DB0F57; color: #FFFFFF; font-size: 14px; font-weight: 700; cursor: pointer;">{{cfLabel}}</button>
+    </div>
+  </div>
+</sc-if>
+<div class="{{toastClass}}">{{toastText}}</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#006FEE","options":["#006FEE","#9353D3","#17C964","#F5A524"],"section":"Tema"},"myReviews":{"editor":null},"navigate":{"editor":null},"openPerson":{"editor":null},"friends":{"editor":null},"publishReview":{"editor":null},"openGame":{"editor":null},"myHandle":{"editor":null},"myName":{"editor":null},"friendList":{"editor":null},"reviewReq":{"editor":null},"avatars":{"editor":null},"deleteReview":{"editor":null},"$preview":{"width":390,"height":776}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      mode: 'digital',
+      filter: 'trending',
+      liked: {},
+      localMine: [],
+      composerOpen: false,
+      cMode: 'digital',
+      cGame: null,
+      cQuery: '',
+      cRating: 0,
+      cText: '',
+      cTags: [],
+      cDate: '',
+      cWith: [],
+      pk: null,
+      fQuery: '',
+      calY: null,
+      calM: null,
+      search: '',
+      detailId: null,
+      seenReq: null,
+      comments: {},
+      cmLiked: {},
+      draft: '',
+      toast: ''
+    };
+  }
+
+  getMine = () => this.props.myReviews || this.state.localMine;
+  catalog() {
+    return {
+      digital: [['Hollow Knight', 6], ['Portal 2', 5], ['Frostpunk', 1], ['It Takes Two', 0], ['Firewatch', 9], ['Counter-Strike 2', 4], ['Outer Wilds', 2], ['Stardew Valley', 11], ['Celeste', 7], ['Disco Elysium', 3], ['Elden Ring', 12], ['A Short Hike', 8]],
+      analog: [['Ticket to Ride', 10], ['The Resistance: Avalon', 0], ['Cartographers', 7], ['Coup', 4], ['Terraforming Mars', 2], ['7 Wonders', 5], ['Azul', 1], ['Agricola', 9], ['Pandemic', 13], ['Catan', 12], ['Cascadia', 3], ['Wingspan', 6], ['Santorini', 8], ['Splendor', 11], ['Camel Up', 10], ['Cosmic Encounter', 9]]
+    };
+  }
+  tagOptions(mode) {
+    return mode === 'digital'
+      ? ['História', 'Trilha sonora', 'Desafio', 'Visual', 'Cooperativo', 'Relaxante']
+      : ['Rápido', 'Estratégico', 'Bom com amigos', 'Regras complexas', 'Cooperativo', 'Competitivo'];
+  }
+
+  openComposer = (preset) => {
+    const g = preset && preset.title ? preset : null;
+    this.setState({
+      composerOpen: true,
+      cMode: g ? g.mode : this.state.mode,
+      cGame: g ? { title: g.title, art: g.art, mode: g.mode } : null,
+      cQuery: '', cRating: 0, cText: '', cTags: [], cDate: '', cWith: []
+    });
+  };
+  closeComposer = () => this.setState({ composerOpen: false });
+  publish = () => {
+    const s = this.state;
+    if (!s.cGame || s.cRating < 1) return;
+    const review = { id: 'me' + Date.now(), mode: s.cGame.mode, game: s.cGame.title, gameIdx: s.cGame.art, rating: s.cRating, text: (s.cText || '').trim(), tags: [], playedOn: s.cDate || '', playedWith: (s.cWith || []).slice() };
+    if (this.props.publishReview) this.props.publishReview(review);
+    else this.setState({ localMine: [review].concat(this.state.localMine) });
+    this.setState({ composerOpen: false, mode: review.mode, filter: 'mine', toast: 'Avaliação publicada.' });
+    setTimeout(() => this.setState({ toast: '' }), 2000);
+  };
+  openAuthor = (handle) => {
+    if (handle === '@marina.rolls' || handle === this.props.myHandle) { if (this.props.navigate) this.props.navigate('perfil'); }
+    else if (this.props.openPerson) this.props.openPerson(handle);
+  };
+  openDetail = (id) => this.setState({ detailId: id, draft: '', seenReq: this.props.reviewReq ? this.props.reviewReq.n : null });
+  closeDetail = () => {
+    const req = this.props.reviewReq;
+    const fromFeed = !!(req && req.n !== this.state.seenReq);
+    this.setState({ detailId: null, draft: '', seenReq: req ? req.n : null });
+    if (fromFeed && this.props.navigate) this.props.navigate((req && req.from) || 'inicio');
+  };
+  sendComment = () => {
+    const s = this.state;
+    const t = (s.draft || '').trim();
+    if (!t || !s.detailId) return;
+    const all = Object.assign({}, s.comments);
+    all[s.detailId] = (all[s.detailId] || []).concat([{ id: 'mc' + Date.now(), text: t }]);
+    this.setState({ comments: all, draft: '' });
+  };
+  ask = (title, text, label, run) => this.setState({ confirm: { title: title, text: text, label: label, run: run } });
+  cfNo = () => this.setState({ confirm: null });
+  cfYes = () => {
+    const c = this.state.confirm;
+    this.setState({ confirm: null });
+    if (c && c.run) c.run();
+  };
+
+  dnStart = (e) => {
+    const t = e.touches && e.touches[0];
+    if (!t) return;
+    const el = e.currentTarget;
+    const rect = el.getBoundingClientRect();
+    const scale = el.offsetHeight ? rect.height / el.offsetHeight : 1;
+    if ((t.clientY - rect.top) / (scale || 1) > 72) { this._dn = null; return; }
+    this._dn = { el: el, key: el.getAttribute('data-sheet'), x0: t.clientX, y0: t.clientY, scale: scale || 1, active: false, dy: 0, t0: Date.now() };
+  };
+  dnMove = (e) => {
+    const s = this._dn;
+    if (!s) return;
+    const t = e.touches[0];
+    const dy = (t.clientY - s.y0) / s.scale;
+    const dx = (t.clientX - s.x0) / s.scale;
+    if (!s.active) {
+      if (Math.abs(dx) > 16 && Math.abs(dx) > Math.abs(dy)) { this._dn = null; return; }
+      if (dy > 10 && dy > Math.abs(dx) * 1.3) s.active = true; else return;
+    }
+    s.dy = Math.max(0, dy);
+    s.el.style.transition = 'none';
+    s.el.style.transform = 'translateY(' + s.dy + 'px)';
+  };
+  dnEnd = () => {
+    const s = this._dn;
+    this._dn = null;
+    if (!s || !s.active) return;
+    const el = s.el;
+    const clear = () => { try { el.style.transition = ''; el.style.transform = ''; } catch (err) { /* elemento removido */ } };
+    const fast = s.dy > 40 && s.dy / Math.max(1, Date.now() - s.t0) > 0.6;
+    if (s.dy > 110 || fast) {
+      el.style.transition = 'transform .2s ease-out';
+      el.style.transform = 'translateY(' + (el.offsetHeight + 40) + 'px)';
+      setTimeout(() => { this.dnClose(s.key); setTimeout(clear, 80); }, 190);
+    } else {
+      el.style.transition = 'transform .2s ease';
+      el.style.transform = 'translateY(0)';
+      setTimeout(clear, 220);
+    }
+  };
+  dnClose = (key) => {
+    if (key === 'composer') this.closeComposer();
+  };
+
+  removeMine = (id) => {
+    if (this.props.deleteReview) this.props.deleteReview(id);
+    else this.setState({ localMine: this.state.localMine.filter((r) => r.id !== id) });
+  };
+
+  coverId(title) {
+    const ids = {"Hollow Knight":"277d28967fa386097af861953e14c25f","Portal 2":"f69e027e61a24f07a19a3433aaecdfe1","Frostpunk":"d742b55ab9327ec41279d35e7c1b47bf","It Takes Two":"25796a36da18db9bcdd877ad619ed6cf","Firewatch":"e827863b8b1a27c4d177ceb3e4186395","Counter-Strike 2":"b8dfc9323e08ff0d93f2e392ca123355","Outer Wilds":"84956e4bd9cc98eb7fc3a4cc59f78199","Stardew Valley":"103f33fce63cae312c88a26ac07c7325","Celeste":"740c979d64acc42d4ba3a58f7ffa6a07","Disco Elysium":"d6115fe460bc39f64134a3402745b571","Elden Ring":"7e6cc755eda69cc8903a3b38f4003be8","A Short Hike":"24ffd7c04c925b38abc331f4ff276712","Ticket to Ride":"7be1e7e9ef4d7e068198aea62e5c9b73","The Resistance: Avalon":"6f872a9e1e47c881c8c363eaacffe9fe","Cartographers":"2bbafa5ca50297d2d82527d2f186cea3","Coup":"1020e23c2256a72d35ce37bb20e32668","Terraforming Mars":"0fa40174c3d845217e68f9c6e4ed684b","7 Wonders":"3bf63fefca0970a962b3e1bde7616f94","Azul":"c4c2cd9b0c44034d4efe02e766897765","Agricola":"6c7e1dacf1122287d23526e948240fca","Pandemic":"5ebd23f87077370fb8d2eaa31bf425a2","Catan":"da39f348cf772fc5ff8bba976f206c34","Cascadia":"64320339d4d335373144fc3d8dc5c754","Wingspan":"8c5229074fe8117741b15f1bb1b7d3cc","Santorini":"2983ff88878edaad77e2467d03683778","Splendor":"145b0ba42fa5438cc488c322647af2c8","Camel Up":"4944f8f284daf231f3db3f754042e43a","Cosmic Encounter":"ecc4d9078a1524ea374f44a8cf0e9968","Century: Spice Road":"365ca0c856c7d6417ed0bf9d65de4a73","Patchwork":"fb10dbfa1f8dc3011920e51b6ecd4700","Carcassonne":"47b380e0b6a3c8cecefd66cd986a44de"};
+    return ids[title];
+  }
+
+  artFor(title, idx) {
+    const id = this.coverId(title);
+    if (id) return { bg: '#16161A', img: 'url(./covers/' + id + '.jpg)' };
+    return this.art(idx);
+  }
+
+  art(i) {
+    const set = [
+      { bg: '#221E22', img: 'radial-gradient(circle at 50% 56%, #E4572E 0 30%, rgba(0,0,0,0) 30%)' },
+      { bg: '#12161B', img: 'linear-gradient(122deg, #6C8EAD 0 46%, rgba(0,0,0,0) 46%)' },
+      { bg: '#14110F', img: 'conic-gradient(from 208deg at 50% 104%, #C9A227 0 44deg, rgba(0,0,0,0) 44deg)' },
+      { bg: '#10130F', img: 'linear-gradient(0deg, #3E5641 0 34%, rgba(0,0,0,0) 34%), radial-gradient(circle at 68% 28%, #A8C686 0 13%, rgba(0,0,0,0) 13%)' },
+      { bg: '#17111F', img: 'linear-gradient(45deg, #7A3E9D 0 50%, rgba(0,0,0,0) 50%)' },
+      { bg: '#1A1114', img: 'radial-gradient(circle at 50% 48%, rgba(0,0,0,0) 0 24%, #D64550 24% 33%, rgba(0,0,0,0) 33%)' },
+      { bg: '#0F1417', img: 'repeating-linear-gradient(180deg, #2B4A5A 0 9px, rgba(0,0,0,0) 9px 20px)' },
+      { bg: '#1C1A15', img: 'linear-gradient(90deg, #D8CFC0 0 22%, rgba(0,0,0,0) 22%)' },
+      { bg: '#161B18', img: 'conic-gradient(from 90deg at 30% 40%, #4E8C7D 0 90deg, rgba(0,0,0,0) 90deg)' },
+      { bg: '#1B1620', img: 'radial-gradient(circle at 26% 74%, #B07BAC 0 22%, rgba(0,0,0,0) 22%)' },
+      { bg: '#101A17', img: 'linear-gradient(160deg, #2F6F5E 0 38%, rgba(0,0,0,0) 38%), radial-gradient(circle at 74% 76%, var(--t-amber,#E8C468) 0 11%, rgba(0,0,0,0) 11%)' },
+      { bg: '#1A1518', img: 'repeating-linear-gradient(90deg, #8C4A5A 0 6px, rgba(0,0,0,0) 6px 18px)' },
+      { bg: '#131A22', img: 'conic-gradient(from 20deg at 70% 20%, #5B7DB1 0 70deg, rgba(0,0,0,0) 70deg)' },
+      { bg: '#1D1913', img: 'radial-gradient(circle at 30% 32%, #C4763A 0 18%, rgba(0,0,0,0) 18%), linear-gradient(200deg, #6B4A2A 0 26%, rgba(0,0,0,0) 26%)' }
+    ];
+    return set[i % set.length];
+  }
+
+  avatarPalette() {
+    return [
+      { bg: '#1F2A24', body: '#3E7D5A', accent: '#0B0F0D' },
+      { bg: '#221E22', body: '#E4572E', accent: '#141014' },
+      { bg: '#12161B', body: '#6C8EAD', accent: '#0A0D10' },
+      { bg: '#14110F', body: '#C9A227', accent: '#0C0906' },
+      { bg: '#17111F', body: '#9B5DE5', accent: '#0D0912' },
+      { bg: '#1A1114', body: '#D64550', accent: '#100B0D' },
+      { bg: '#101A17', body: '#2F6F5E', accent: '#0A100E' },
+      { bg: '#1D1913', body: '#C4763A', accent: '#100E0A' },
+      { bg: '#1B1620', body: '#B07BAC', accent: '#110D14' }
+    ];
+  }
+
+  reviewer(name, handle, idx) {
+    const p = this.avatarPalette()[idx];
+    return { reviewer: name, handle: handle, avBg: p.bg, avBody: p.body, avAccent: p.accent };
+  }
+
+  review(id, r, gameIdx, game, rating, text, likes, comments) {
+    return Object.assign({ id: id, game: game, artIdx: gameIdx, rating: rating, text: text, likes: likes, comments: comments }, r, this.artFor(game, gameIdx));
+  }
+
+  seedPlayed(handle, game) {
+    let h = 0;
+    const str = handle + '|' + game;
+    for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) % 100003;
+    const d = new Date();
+    d.setDate(d.getDate() - (2 + (h % 45)));
+    const iso = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    const pool = ['@yaz.codes', '@rafabtt', '@cadu.plays', '@diegom', '@sofi.alm', '@theov', '@lari.dados', '@pedrosalg', '@biarabelo'].filter((x) => x !== handle);
+    const w = [];
+    for (let i = 0; i < h % 4; i++) { const c = pool[(h + i * 3) % pool.length]; if (w.indexOf(c) < 0) w.push(c); }
+    return { playedOn: h % 7 === 0 ? '' : iso, playedWith: w };
+  }
+
+  hash(str) {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) % 100003;
+    return h;
+  }
+
+  norm(str) {
+    return (str || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+  }
+
+  openGame = (title, art) => { if (this.props.openGame) this.props.openGame(title, art); };
+
+  renderVals() {
+    const accent = this.props.accent ?? '#006FEE';
+    const s0 = this.state;
+    const mode = this.state.mode;
+    const filter = this.state.filter;
+    const liked = this.state.liked;
+    const toggleLike = (id) => {
+      const next = Object.assign({}, liked);
+      next[id] = !next[id];
+      this.setState({ liked: next });
+    };
+
+    const on = { bg: 'var(--t-card3,#27272A)', iconColor: accent, textColor: 'var(--t-text,#ECEDEE)', weight: 700 };
+    const off = { bg: 'transparent', iconColor: 'var(--t-muted,#A1A1AA)', textColor: 'var(--t-muted,#A1A1AA)', weight: 500 };
+    const fOn = { color: 'var(--t-text,#ECEDEE)', weight: 700, bar: accent };
+    const fOff = { color: 'var(--t-muted,#A1A1AA)', weight: 500, bar: 'transparent' };
+
+    const yasmin = this.reviewer('Yasmin Prado', '@yaz.codes', 1);
+    const rafa = this.reviewer('Rafa Bittencourt', '@rafabtt', 2);
+    const camila = this.reviewer('Camila Duarte', '@cadu.plays', 3);
+    const diego = this.reviewer('Diego M.', '@diegom', 4);
+    const sofia = this.reviewer('Sofia Almeida', '@sofi.alm', 5);
+    const theo = this.reviewer('Théo Vasques', '@theov', 6);
+    const larissa = this.reviewer('Larissa K.', '@lari.dados', 7);
+    const pedro = this.reviewer('Pedro Salgado', '@pedrosalg', 8);
+    const bianca = this.reviewer('Bianca R.', '@biarabelo', 0);
+    const me = this.reviewer('Carol Guimarães', '@marina.rolls', 0);
+
+    const reviewsByKey = {
+      'digital-trending': [
+        this.review('dt1', yasmin, 6, 'Hollow Knight', 5, 'Terminei em uma madrugada só e comecei de novo na manhã seguinte.', 284, 37),
+        this.review('dt2', rafa, 9, 'Firewatch', 4, 'A trilha sonora carrega o jogo inteiro nas costas.', 196, 22),
+        this.review('dt3', camila, 4, 'Counter-Strike 2', 3, 'Tiroteio preciso e partidas tensas, mas o ranked cobra muita paciência.', 152, 14),
+        this.review('dt4', bianca, 2, 'Outer Wilds', 4, 'Puzzle ambiental que ensina só olhando — nenhum tutorial em texto.', 118, 9),
+        this.review('dt5', theo, 11, 'Stardew Valley', 3, 'Relaxante demais pra quem queria desafio.', 64, 5),
+        this.review('dt6', larissa, 7, 'Celeste', 5, 'Level design que ensina cada mecânica sem precisar de uma linha de texto.', 210, 28),
+        this.review('dt7', sofia, 3, 'Disco Elysium', 4, 'Final ambíguo que ainda estou processando uma semana depois.', 87, 16),
+        this.review('dt8', yasmin, 12, 'Elden Ring', 4, 'Build de fogo quebrou o jogo de um jeito muito satisfatório.', 132, 12)
+      ],
+      'digital-following': [
+        this.review('df1', diego, 5, 'Portal 2', 4, 'Fiquei preso na mesma sala por quarenta minutos e valeu cada segundo.', 41, 6),
+        this.review('df2', sofia, 1, 'Frostpunk', 5, 'O primeiro jogo em anos que me fez anotar tudo num caderno de verdade.', 63, 9),
+        this.review('df3', theo, 8, 'A Short Hike', 3, 'Bonito, curto, e some da memória rápido demais.', 28, 3),
+        this.review('df4', rafa, 0, 'It Takes Two', 5, 'Zerei junto com minha dupla de sofá, melhor coop do ano.', 22, 4),
+        this.review('df5', camila, 7, 'Celeste', 4, 'Achei a plataforma frustrante até entender o ritmo do pulo.', 15, 2),
+        this.review('df6', bianca, 2, 'Outer Wilds', 5, 'Cada ciclo revela uma pista nova e eu não consigo parar de jogar.', 47, 6),
+        this.review('df7', pedro, 11, 'Stardew Valley', 3, 'Bonito de assistir, entediante de jogar depois da segunda hora.', 9, 1),
+        this.review('df8', larissa, 12, 'Elden Ring', 4, 'Montei uma build exagerada e virei praticamente invencível.', 31, 5)
+      ],
+      'analog-trending': [
+        this.review('at1', larissa, 10, 'Ticket to Ride', 5, 'Partida rápida de explicar e todo mundo pediu revanche.', 231, 45),
+        this.review('at2', pedro, 2, 'Terraforming Mars', 4, 'As regras assustam no papel, mas fluem sozinhas na segunda rodada.', 178, 19),
+        this.review('at3', bianca, 7, 'Cartographers', 4, 'Ganhei três vezes seguidas e ainda assim quero jogar de novo hoje.', 140, 11),
+        this.review('at4', yasmin, 5, '7 Wonders', 5, 'Draft tenso do início ao fim, ninguém revelou a mão até o final.', 165, 21),
+        this.review('at5', theo, 1, 'Azul', 4, 'Bonito de montar e de jogar. Funciona até com quem nunca jogou.', 98, 10),
+        this.review('at6', diego, 9, 'Agricola', 3, 'Bom jogo, péssimo pra grupos grandes — trava demais com cinco.', 54, 7),
+        this.review('at7', sofia, 4, 'Coup', 5, 'Blefei até o fim e ganhei sem revelar uma carta sequer.', 187, 24),
+        this.review('at8', camila, 13, 'Pandemic', 4, 'Cooperativo difícil de verdade — perdemos as três primeiras vezes.', 76, 13)
+      ],
+      'analog-following': [
+        this.review('af1', rafa, 0, 'The Resistance: Avalon', 3, 'Traição boa, mas quem erra a leitura no começo acaba carregando a partida.', 34, 8),
+        this.review('af2', camila, 12, 'Catan', 5, 'Perdi a rota inteira pra um bloqueio e mesmo assim foi a melhor partida do ano.', 52, 7),
+        this.review('af3', diego, 3, 'Cascadia', 4, 'Mesa silenciosa por vinte minutos só calculando onde encaixar cada habitat.', 19, 2),
+        this.review('af4', yasmin, 6, 'Wingspan', 4, 'Economia lenta no começo, decola de vez na segunda rodada.', 12, 2),
+        this.review('af5', pedro, 8, 'Santorini', 5, 'Peças lindas que a mesa inteira parou pra admirar antes de jogar.', 27, 4),
+        this.review('af6', bianca, 1, 'Splendor', 3, 'Fichas lindas e regras simples, mas a corrida por cartas é impiedosa.', 8, 1),
+        this.review('af7', larissa, 11, 'Camel Up', 4, 'Partida rápida que virou três seguidas sem ninguém perceber a hora.', 21, 3),
+        this.review('af8', theo, 9, 'Cosmic Encounter', 5, 'Negociação hostil que quase acabou em amizade desfeita — 10/10.', 39, 6)
+      ]
+    };
+
+    const mine = this.getMine();
+    const mineInMode = mine.filter((m) => m.mode === mode);
+    const mineAsReviews = mineInMode.map((m) => Object.assign(this.review(m.id, me, m.gameIdx, m.game, m.rating, m.text, 0, 0), { isMine: true, seedRv: !!m.seed, whenLabel: m.when || 'agora', tags: m.tags, playedOn: m.playedOn || '', playedWith: m.playedWith || [] }));
+
+    let base;
+    if (filter === 'mine') base = mineAsReviews;
+    else if (filter === 'trending') base = mineAsReviews.filter((x) => !x.seedRv).concat(reviewsByKey[mode + '-trending']);
+    else base = reviewsByKey[mode + '-following'];
+
+    const friends = this.props.friends || [];
+    const metaOf = (r) => {
+      const pl = r && r.playedOn ? r.playedOn.split('-') : null;
+      const lab = pl && pl.length === 3 ? new Date(+pl[0], +pl[1] - 1, +pl[2]).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' }).replace(/\./g, '') : '';
+      const wh = (r && r.playedWith) || [];
+      return { hasPlayedMeta: !!lab || wh.length > 0, hasPlayedOn: !!lab, playedShort: lab, hasWith: wh.length > 0, withAvs: wh.map((h) => ({ uri: (this.props.avatars || {})[h] || '' })) };
+    };
+    const decorate = (r) => {
+      if (!r.isMine && r.playedOn === undefined) r = Object.assign({}, r, this.seedPlayed(r.handle, r.game));
+      const tags = r.tags || [];
+      return Object.assign({}, r, metaOf(r), {
+        openDetail: () => this.openDetail(r.id),
+        isFriend: friends.indexOf(r.handle) >= 0,
+        avUri: (this.props.avatars || {})[r.handle] || '',
+        handleLabel: r.isMine && this.props.myHandle ? this.props.myHandle : r.handle,
+        openAuthor: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.openAuthor(r.handle); },
+        openGame: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.openGame(r.game, r.artIdx); },
+        isMine: !!r.isMine,
+        whenLabel: r.whenLabel || '',
+        hasText: !!r.text,
+        hasTags: tags.length > 0,
+        tagChips: tags.map((t) => ({ label: t })),
+        likeCount: r.likes + (liked[r.id] ? 1 : 0),
+        likeFill: liked[r.id] ? accent : 'none',
+        likeStroke: liked[r.id] ? accent : 'var(--t-muted,#A1A1AA)',
+        toggleLike: (e) => { if (e && e.stopPropagation) e.stopPropagation(); toggleLike(r.id); },
+        onDelete: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.ask('Excluir sua avaliação?', 'Sua avaliação será removida desta lista e do seu perfil. Não dá para desfazer.', 'Excluir', () => this.removeMine(r.id)); },
+        stars: [0, 1, 2, 3, 4].map((i) => ({ fill: i < r.rating ? accent : 'var(--t-line,#3F3F46)' })),
+        bigStars: [0, 1, 2, 3, 4].map((i) => ({ fill: i < r.rating ? accent : 'var(--t-line,#3F3F46)' }))
+      });
+    };
+    const reviews = base.map(decorate);
+
+    // detalhe da avaliação
+    const pool = mine.map((m) => Object.assign(this.review(m.id, me, m.gameIdx, m.game, m.rating, m.text, 0, 0), { isMine: true, whenLabel: m.when || 'agora', tags: m.tags, playedOn: m.playedOn || '', playedWith: m.playedWith || [] }));
+    Object.keys(reviewsByKey).forEach((k) => { reviewsByKey[k].forEach((x) => pool.push(x)); });
+    const req = this.props.reviewReq;
+    const reqActive = !!(req && req.n !== s0.seenReq);
+    let rawDetail = null;
+    if (reqActive) {
+      rawDetail = (req.mineId ? pool.filter((x) => x.id === req.mineId)[0] : null) || pool.filter((x) => x.handle === req.handle && x.game === req.game)[0] || null;
+      if (!rawDetail) rawDetail = Object.assign(this.review('feed-' + req.id, { reviewer: req.reviewer, handle: req.handle, avBg: req.avBg, avBody: req.avBody, avAccent: req.avAccent }, req.artIdx, req.game, req.rating, req.text, req.likes, req.comments), (req.handle === '@marina.rolls' || req.handle === this.props.myHandle) ? { isMine: true } : {});
+    } else if (s0.detailId) {
+      rawDetail = pool.filter((x) => x.id === s0.detailId)[0] || null;
+    }
+    const dr = rawDetail ? decorate(rawDetail) : null;
+    const commentPool = [
+      'Concordo demais, foi exatamente essa a minha sensação.',
+      'Me deu vontade de jogar de novo só pra conferir.',
+      'Achei mais ou menos, mas respeito sua opinião!',
+      'Quem mais jogou com amigos? Muda completamente a experiência.',
+      'Boa avaliação, me convenceu a colocar na lista.',
+      'Fui por esse caminho também e não me arrependi.',
+      'Faltou falar do final, mas curti o texto.',
+      'Marcado aqui pra jogar no fim de semana!'
+    ];
+    const people = [yasmin, rafa, camila, diego, sofia, theo, larissa, pedro, bianca];
+    const mkAv = (p) => ({ reviewer: p.reviewer, handle: p.handle, avBg: p.avBg, avBody: p.avBody, avAccent: p.avAccent, avUri: (this.props.avatars || {})[p.handle] || '' });
+    const dIsDigital = !!dr && this.catalog().digital.some((g) => g[0] === dr.game);
+    const dKind = dIsDigital
+      ? { label: 'Jogo digital', color: 'var(--t-accsoft,#8FC7FF)', ring: 'rgba(0,111,238,0.55)', icon: 'M6 12h4M8 10v4M15 13h.01M18 11h.01M17.32 5H6.68a4 4 0 0 0-3.98 3.59C2.6 9.4 2 14.5 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.4-1.4a2 2 0 0 1 1.4-.6h4.4a2 2 0 0 1 1.4.6L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.5-.6-6.6-.7-7.3A4 4 0 0 0 17.3 5Z' }
+      : { label: 'Jogo analógico', color: 'var(--t-amber,#F5C451)', ring: 'rgba(245,165,36,0.55)', icon: 'M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM8 8h.01M16 8h.01M12 12h.01M8 16h.01M16 16h.01' };
+    let detail = { show: false };
+    let dMeta = { hasPlayedOn: false, playedLabel: '', hasWith: false, withLabel: '', withAvs: [] };
+    let dComments = [];
+    let dLikedBy = [];
+    if (dr) {
+      const h = this.hash(dr.id);
+      const others = people.filter((p) => p.handle !== dr.handle);
+      const seedN = Math.min(dr.comments || 0, 4);
+      const seeded = [];
+      for (let i = 0; i < seedN; i++) {
+        const p = others[(h + i * 3) % others.length];
+        seeded.push(Object.assign({ id: dr.id + '-s' + i, text: commentPool[(h + i * 5) % commentPool.length], when: i === 0 ? 'há 2 h' : (i === 1 ? 'há 5 h' : 'ontem'), isMe: false }, mkAv(p)));
+      }
+      const added = (s0.comments[dr.id] || []).map((c) => Object.assign({ id: c.id, text: c.text, when: 'agora', isMe: true }, mkAv(me), { reviewer: this.props.myName || 'Carol Guimarães', avUri: (this.props.avatars || {})['@marina.rolls'] || '' }));
+      dComments = seeded.concat(added).map((c) => {
+        const on = !!s0.cmLiked[c.id];
+        return Object.assign({}, c, {
+          likeFill: on ? accent : 'none',
+          likeStroke: on ? accent : 'var(--t-faint,#71717A)',
+          onLike: () => { const n = Object.assign({}, s0.cmLiked); n[c.id] = !n[c.id]; this.setState({ cmLiked: n }); },
+          openAuthor: () => { if (!c.isMe) this.openAuthor(c.handle); }
+        });
+      });
+      const likers = others.filter((p, i) => (i + h) % 3 !== 0).slice(0, 3);
+      dLikedBy = dr.likeCount > 0 ? likers.map(mkAv) : [];
+      const total = (dr.comments || 0) + (s0.comments[dr.id] || []).length;
+      const pl = dr.playedOn ? dr.playedOn.split('-') : null;
+      const playedLabel = pl && pl.length === 3 ? new Date(+pl[0], +pl[1] - 1, +pl[2]).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+      const nameOf = (h) => { const f = (this.props.friendList || []).filter((x) => x.handle === h)[0] || people.filter((x) => x.handle === h)[0]; return f ? String(f.name || f.reviewer).split(' ')[0] : h; };
+      const withH = dr.playedWith || [];
+      dMeta = { hasPlayedOn: !!playedLabel, playedLabel: playedLabel, hasWith: withH.length > 0, withLabel: withH.map(nameOf).join(', '), withAvs: withH.map((h) => ({ uri: (this.props.avatars || {})[h] || '' })) };
+      detail = {
+        show: true,
+        total: total,
+        totalLabel: total === 1 ? '1 comentário' : total + ' comentários',
+        hiddenMore: total > dComments.length,
+        moreLabel: 'Ver mais ' + (total - dComments.length) + (total - dComments.length === 1 ? ' comentário' : ' comentários'),
+        likesLabel: dr.likeCount + (dr.likeCount === 1 ? ' curtida' : ' curtidas')
+      };
+    }
+    const noDetail = { bg: '#000', img: 'none', game: '', reviewer: '', avBg: '#000', avBody: '#000', avAccent: '#000', avUri: '', text: '', hasText: false, hasTags: false, tagChips: [], bigStars: [], likeFill: 'none', likeStroke: 'var(--t-muted,#A1A1AA)', likeCount: 0, toggleLike: () => {}, openGame: () => {}, openAuthor: () => {}, handleLabel: '', isFriend: false };
+    const draftOk = (s0.draft || '').trim().length > 0;
+
+    const cat = this.catalog();
+    const quickTitles = mode === 'digital' ? ['Hollow Knight', 'Portal 2', 'Frostpunk', 'It Takes Two'] : ['Ticket to Ride', 'The Resistance: Avalon', 'Cartographers', 'Coup'];
+    const reviewedTitles = mineInMode.map((m) => m.game);
+    const quickGames = cat[mode].filter((g) => quickTitles.indexOf(g[0]) >= 0 && reviewedTitles.indexOf(g[0]) < 0).slice(0, 4).map((g) => Object.assign({ title: g[0], onPick: () => this.openComposer({ title: g[0], art: g[1], mode: mode }) }, this.artFor(g[0], g[1])));
+
+    // compositor
+    const s = this.state;
+    const q = (s.cQuery || '').toLowerCase().trim();
+    const gameResults = cat[s.cMode].filter((g) => !q || g[0].toLowerCase().indexOf(q) >= 0).slice(0, 7).map((g) => Object.assign({ title: g[0], onPick: () => this.setState({ cGame: { title: g[0], art: g[1], mode: s.cMode } }) }, this.artFor(g[0], g[1])));
+    const cGame = s.cGame ? Object.assign({ title: s.cGame.title, kindLabel: s.cGame.mode === 'digital' ? 'Jogo digital' : 'Jogo de mesa' }, this.artFor(s.cGame.title, s.cGame.art)) : { title: '', kindLabel: '', bg: 'var(--t-bg,#000)', img: 'none' };
+    const ratingLabels = ['Toque para dar sua nota', 'Fraco', 'Regular', 'Bom', 'Ótimo', 'Obra-prima'];
+    const starPicks = [1, 2, 3, 4, 5].map((n) => ({ label: n + (n === 1 ? ' estrela' : ' estrelas'), fill: n <= s.cRating ? accent : 'none', stroke: n <= s.cRating ? accent : 'var(--t-faint2,#52525B)', onPick: () => this.setState({ cRating: n }) }));
+    const tagOpts = this.tagOptions(s.cGame ? s.cGame.mode : s.cMode);
+    const tagPicks = tagOpts.map((label) => {
+      const picked = s.cTags.indexOf(label) >= 0;
+      const full = !picked && s.cTags.length >= 3;
+      return { label: label, cls: 'c-chip' + (picked ? ' on' : '') + (full ? ' off' : ''), onPick: () => {
+        if (picked) this.setState({ cTags: s.cTags.filter((x) => x !== label) });
+        else if (!full) this.setState({ cTags: s.cTags.concat([label]) });
+      } };
+    });
+    // seletores de data e amigos
+    const todayD = new Date();
+    const todayIso = todayD.getFullYear() + '-' + String(todayD.getMonth() + 1).padStart(2, '0') + '-' + String(todayD.getDate()).padStart(2, '0');
+    const pad2 = (n) => String(n).padStart(2, '0');
+    const fmtIso = (iso) => { const p = iso ? iso.split('-') : null; return p && p.length === 3 ? new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }) : ''; };
+    const curDate = s.cDate || '';
+    const baseY = s.calY != null ? s.calY : (curDate ? +curDate.split('-')[0] : todayD.getFullYear());
+    const baseM = s.calM != null ? s.calM : (curDate ? +curDate.split('-')[1] - 1 : todayD.getMonth());
+    const atMax = baseY === todayD.getFullYear() && baseM === todayD.getMonth();
+    const firstDow = new Date(baseY, baseM, 1).getDay();
+    const dim = new Date(baseY, baseM + 1, 0).getDate();
+    const calCells = [];
+    for (let i = 0; i < firstDow; i++) calCells.push({ label: '', aria: '', style: 'visibility: hidden; height: 42px;', onPick: () => {} });
+    for (let d = 1; d <= dim; d++) {
+      const iso = baseY + '-' + pad2(baseM + 1) + '-' + pad2(d);
+      const future = iso > todayIso;
+      const sel = iso === curDate;
+      const isToday = iso === todayIso;
+      calCells.push({ label: String(d), aria: d + ' de ' + new Date(baseY, baseM, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }),
+        style: 'height: 42px; padding: 0; border: none; border-radius: 12px; font-family: inherit; font-size: 14px; font-weight: ' + (sel || isToday ? '800' : '600') + '; cursor: ' + (future ? 'default' : 'pointer') + '; background: ' + (sel ? accent : 'transparent') + '; color: ' + (sel ? '#FFFFFF' : (future ? 'var(--t-line,#3F3F46)' : 'var(--t-text,#ECEDEE)')) + '; box-shadow: ' + (isToday && !sel ? 'inset 0 0 0 1px rgba(255,255,255,0.28)' : 'none') + ';',
+        onPick: () => { if (!future) this.setState({ cDate: iso, pk: null, calY: null, calM: null }); } });
+    }
+    const friendList = this.props.friendList || [];
+    const withSel = s.cWith || [];
+    const norm2 = (t) => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const fq = norm2((s.fQuery || '').trim());
+    const friendRows = friendList.filter((f) => !fq || norm2(f.name).indexOf(fq) >= 0 || norm2(f.handle).indexOf(fq) >= 0).map((f) => {
+      const on = withSel.indexOf(f.handle) >= 0;
+      return { name: f.name, handle: f.handle, uri: (this.props.avatars || {})[f.handle] || '', on: on ? 'true' : 'false', isOn: on,
+        boxStyle: 'flex: none; width: 24px; height: 24px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: ' + (on ? accent : 'transparent') + '; box-shadow: inset 0 0 0 2px ' + (on ? accent : 'var(--t-faint2,#52525B)') + ';',
+        onPick: () => this.setState({ cWith: on ? withSel.filter((h) => h !== f.handle) : withSel.concat([f.handle]) }) };
+    });
+    const withChips = withSel.map((h) => { const f = friendList.filter((x) => x.handle === h)[0]; return { first: f ? String(f.name).split(' ')[0] : h, uri: (this.props.avatars || {})[h] || '', onRemove: () => this.setState({ cWith: withSel.filter((x) => x !== h) }) }; });
+    const valid = !!s.cGame && s.cRating >= 1;
+
+    // busca de jogos (digital + analógico)
+    const sq = this.norm(s.search);
+    const allGames = cat.digital.map((g) => [g[0], g[1], 'digital']).concat(cat.analog.map((g) => [g[0], g[1], 'analog']));
+    const found = sq ? allGames.filter((g) => this.norm(g[0]).indexOf(sq) >= 0).sort((a, b) => (this.norm(a[0]).indexOf(sq) === 0 ? 0 : 1) - (this.norm(b[0]).indexOf(sq) === 0 ? 0 : 1)) : [];
+    const searchResults = found.map((g) => {
+      const avg = 3.5 + (this.hash(g[0] + 'avg') % 13) / 10;
+      const n = 140 + (this.hash(g[0] + 'n') % 2200);
+      return Object.assign({
+        title: g[0], kindLabel: g[2] === 'digital' ? 'Jogo digital' : 'Jogo de mesa',
+        avgLabel: avg.toFixed(1).replace('.', ','), countLabel: n.toLocaleString('pt-BR') + ' avaliações',
+        onOpen: () => this.openGame(g[0], g[1]),
+        onRate: () => this.openComposer({ title: g[0], art: g[1], mode: g[2] })
+      }, this.artFor(g[0], g[1]));
+    });
+    const mineCount = mine.filter((m) => m.mode === mode).length;
+
+    return {
+      accent: accent,
+      searchQuery: s.search,
+      hasSearch: sq.length > 0,
+      notSearching: sq.length === 0,
+      onSearch: (e) => this.setState({ search: e.target.value }),
+      clearSearch: () => this.setState({ search: '' }),
+      searchResults: searchResults,
+      noSearchResults: searchResults.length === 0,
+      searchCountLabel: searchResults.length === 1 ? '1 jogo encontrado' : searchResults.length + ' jogos encontrados',
+      pickDigital: () => this.setState({ mode: 'digital' }),
+      pickAnalog: () => this.setState({ mode: 'analog' }),
+      pickTrending: () => this.setState({ filter: 'trending' }),
+      pickFollowing: () => this.setState({ filter: 'following' }),
+      pickMine: () => this.setState({ filter: 'mine' }),
+      modeTabs: { digital: mode === 'digital' ? on : off, analog: mode === 'analog' ? on : off },
+      filterTabs: { trending: filter === 'trending' ? fOn : fOff, following: filter === 'following' ? fOn : fOff, mine: filter === 'mine' ? fOn : fOff },
+      mineCount: mineCount,
+      hasMineCount: mineCount > 0,
+      showQuick: filter !== 'mine' && quickGames.length > 0,
+      quickGames: quickGames,
+      showEmptyMine: filter === 'mine' && mineAsReviews.length === 0,
+      emptyMineTitle: mode === 'digital' ? 'Você ainda não avaliou jogos digitais' : 'Você ainda não avaliou jogos de mesa',
+      reviews: reviews,
+      openComposer: () => this.openComposer(),
+      closeComposer: this.closeComposer,
+      dnStart: this.dnStart,
+      dnMove: this.dnMove,
+      dnEnd: this.dnEnd,
+      composerClass: 'composer' + (s.composerOpen ? ' open' : ''),
+      detailClass: 'detail' + (dr ? ' open' : ''),
+      dr: dr || noDetail,
+      detail: detail,
+      dComments: dComments,
+      dLikedBy: dLikedBy,
+      hasLikedBy: dLikedBy.length > 0,
+      likedByLabel: dLikedBy.map((p) => p.reviewer.split(' ')[0]).join(', ') + (dr && dr.likeCount > dLikedBy.length ? ' e mais ' + (dr.likeCount - dLikedBy.length) : ''),
+      dKind: dKind,
+      dMeta: dMeta,
+      hasPlayedMeta: dMeta.hasPlayedOn || dMeta.hasWith,
+      hasDComments: dComments.length > 0,
+      closeDetail: this.closeDetail,
+      detailOpenGame: () => { if (dr) this.openGame(dr.game, dr.artIdx); },
+      detailOpenAuthor: () => { if (dr) this.openAuthor(dr.handle); },
+      draft: s.draft,
+      onDraft: (e) => this.setState({ draft: e.target.value }),
+      onDraftKey: (e) => { if (e.key === 'Enter') { e.preventDefault(); this.sendComment(); } },
+      sendComment: this.sendComment,
+      sendStyle: 'flex: none; width: 40px; height: 40px; padding: 0; border: none; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: ' + (draftOk ? 'pointer' : 'default') + '; background: ' + (draftOk ? accent : 'var(--t-card3,#27272A)') + '; color: ' + (draftOk ? '#FFFFFF' : 'var(--t-faint,#71717A)') + ';',
+      myAvUri: (this.props.avatars || {})['@marina.rolls'] || '',
+      hasGame: !!s.cGame,
+      noGame: !s.cGame,
+      cGame: cGame,
+      clearGame: () => this.setState({ cGame: null }),
+      cModeTabs: {
+        digital: s.cMode === 'digital' ? { bg: 'var(--t-card3,#27272A)', color: 'var(--t-text,#ECEDEE)', weight: 700 } : { bg: 'transparent', color: 'var(--t-muted,#A1A1AA)', weight: 500 },
+        analog: s.cMode === 'analog' ? { bg: 'var(--t-card3,#27272A)', color: 'var(--t-text,#ECEDEE)', weight: 700 } : { bg: 'transparent', color: 'var(--t-muted,#A1A1AA)', weight: 500 }
+      },
+      cPickDigital: () => this.setState({ cMode: 'digital' }),
+      cPickAnalog: () => this.setState({ cMode: 'analog' }),
+      cQuery: s.cQuery,
+      onQuery: (e) => this.setState({ cQuery: e.target.value }),
+      gameResults: gameResults,
+      noResults: gameResults.length === 0,
+      starPicks: starPicks,
+      ratingLabel: ratingLabels[s.cRating],
+      ratingColor: s.cRating > 0 ? 'var(--t-text,#ECEDEE)' : 'var(--t-faint,#71717A)',
+      cText: s.cText,
+      onText: (e) => this.setState({ cText: e.target.value.slice(0, 280) }),
+      textCount: (s.cText || '').length,
+      tagPicks: tagPicks,
+      todayIso: todayIso,
+      datePickerOpen: s.pk === 'date',
+      friendPickerOpen: s.pk === 'friends',
+      openDatePicker: () => this.setState({ pk: 'date', calY: null, calM: null }),
+      openFriendPicker: () => this.setState({ pk: 'friends', fQuery: '' }),
+      closePicker: () => this.setState({ pk: null, calY: null, calM: null }),
+      hasDate: !!curDate,
+      dateLabel: curDate ? fmtIso(curDate) : 'Escolher data',
+      dateColor: curDate ? 'var(--t-text,#ECEDEE)' : 'var(--t-faint,#71717A)',
+      clearDate: () => this.setState({ cDate: '' }),
+      clearDateClose: () => this.setState({ cDate: '', pk: null, calY: null, calM: null }),
+      pickToday: () => this.setState({ cDate: todayIso, pk: null, calY: null, calM: null }),
+      calMonthLabel: new Date(baseY, baseM, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }),
+      calPrev: () => this.setState({ calY: baseM === 0 ? baseY - 1 : baseY, calM: (baseM + 11) % 12 }),
+      calNext: () => { if (!atMax) this.setState({ calY: baseM === 11 ? baseY + 1 : baseY, calM: (baseM + 1) % 12 }); },
+      calNextStyle: 'width: 40px; height: 40px; padding: 0; border: none; border-radius: 12px; background: var(--t-card2,#212124); color: var(--t-text,#ECEDEE); display: flex; align-items: center; justify-content: center; cursor: ' + (atMax ? 'default' : 'pointer') + '; opacity: ' + (atMax ? '0.35' : '1') + ';',
+      calWeek: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map((l) => ({ l: l })),
+      calCells: calCells,
+      fQuery: s.fQuery || '',
+      onFQuery: (e) => this.setState({ fQuery: e.target.value }),
+      friendRows: friendRows,
+      noFriendResults: friendRows.length === 0,
+      noFriendText: friendList.length === 0 ? 'Você ainda não tem amigos no Círculo. Quando seguir e for seguido de volta, eles aparecem aqui.' : 'Nenhum amigo encontrado com esse nome.',
+      friendCountLabel: withSel.length === 0 ? 'Opcional' : (withSel.length === 1 ? '1 selecionado' : withSel.length + ' selecionados'),
+      friendDoneLabel: withSel.length > 0 ? 'Concluir (' + withSel.length + ')' : 'Concluir',
+      hasWith: withSel.length > 0,
+      withChips: withChips,
+      friendBtnLabel: withSel.length === 0 ? 'Marcar amigos' : (withSel.length === 1 ? '1 amigo marcado' : withSel.length + ' amigos marcados'),
+      friendBtnColor: withSel.length === 0 ? 'var(--t-faint,#71717A)' : 'var(--t-text,#ECEDEE)',
+      publish: this.publish,
+      publishLabel: !s.cGame ? 'Escolha um jogo' : (s.cRating < 1 ? 'Dê uma nota' : 'Publicar avaliação'),
+      publishStyle: 'width: 100%; height: 50px; border: none; border-radius: 14px; font-size: 15px; font-weight: 800; cursor: ' + (valid ? 'pointer' : 'default') + '; background: ' + (valid ? accent : 'var(--t-card3,#27272A)') + '; color: ' + (valid ? '#FFFFFF' : 'var(--t-faint,#71717A)') + ';',
+      toastClass: 'toast' + (s.toast ? ' show' : ''),
+      toastText: s.toast,
+      cfOpen: !!s.confirm,
+      cfTitle: s.confirm ? s.confirm.title : '',
+      cfText: s.confirm ? s.confirm.text : '',
+      cfLabel: s.confirm ? s.confirm.label : '',
+      cfNo: this.cfNo,
+      cfYes: this.cfYes
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Onboarding</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap">
+<style>
+  * { scrollbar-width: none; -ms-overflow-style: none; box-sizing: border-box; }
+  *::-webkit-scrollbar { width: 0; height: 0; display: none; }
+  body { margin: 0; background: var(--t-bg,#000000); color: var(--t-text,#ECEDEE); font-family: 'Manrope', 'Segoe UI', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  button { font-family: inherit; }
+  .ob-title { font-family: 'Space Grotesk', 'Segoe UI', sans-serif; letter-spacing: -0.02em; }
+  .ob-field { width: 100%; height: 44px; background: var(--t-card,#18181B); border: 1px solid rgba(var(--t-ink,255,255,255),0.1); border-radius: 12px; padding: 0 14px 0 40px; color: var(--t-text,#ECEDEE); font-family: 'Manrope', sans-serif; font-size: 14px; outline: none; }
+  .ob-field:focus { border-color: rgba(0,111,238,0.6); }
+  @keyframes ob-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes ob-orbit { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  @keyframes ob-counter { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+  .ob-step { animation: ob-in .28s ease; }
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: var(--appH,844px); overflow: hidden; background: var(--t-bg,#000000); display: flex; flex-direction: column;">
+
+  <!-- topo: progresso + pular -->
+  <div style="flex: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 16px 8px 20px; min-height: 64px;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <sc-if value="{{canBack}}" hint-placeholder-val="{{false}}">
+        <button type="button" onClick="{{back}}" aria-label="Voltar" style="width: 38px; height: 38px; margin-left: -6px; padding: 0; border: none; border-radius: 12px; background: var(--t-card,#18181B); color: var(--t-text,#ECEDEE); cursor: pointer; display: flex; align-items: center; justify-content: center;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg>
+        </button>
+      </sc-if>
+      <div role="progressbar" aria-label="Progresso" aria-valuemin="1" aria-valuemax="{{stepTotal}}" aria-valuenow="{{stepNum}}" style="display: flex; gap: 6px;">
+        <sc-for list="{{dots}}" as="d" hint-placeholder-count="4"><span style="{{d.style}}"></span></sc-for>
+      </div>
+    </div>
+    <button type="button" onClick="{{skip}}" style="height: 40px; padding: 0 12px; border: none; border-radius: 10px; background: transparent; color: var(--t-muted,#A1A1AA); font-size: 14px; font-weight: 700; cursor: pointer;">Pular</button>
+  </div>
+
+  <!-- PASSO 1: boas-vindas -->
+  <sc-if value="{{isWelcome}}" hint-placeholder-val="{{true}}">
+    <div class="ob-step" style="flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 0 24px;">
+      <div style="flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center;">
+        <div aria-hidden="true" style="position: relative; width: 300px; height: 300px; flex: none; transform: scale(var(--orbS,1));">
+          <div style="position: absolute; inset: 0; border-radius: 50%; border: 1.5px dashed rgba(143,199,255,0.28);"></div>
+          <div style="position: absolute; inset: 52px; border-radius: 50%; border: 1.5px dashed rgba(245,196,81,0.3);"></div>
+          <div style="position: absolute; inset: 104px; border-radius: 50%; background: radial-gradient(circle, rgba(0,111,238,0.35), rgba(0,111,238,0) 70%);"></div>
+          <div style="position: absolute; inset: 0; animation: ob-orbit 40s linear infinite;">
+            <sc-for list="{{orbit}}" as="o" hint-placeholder-count="6">
+              <div style="{{o.wrap}}"><img src="{{o.uri}}" alt="" style="{{o.img}}"></div>
+            </sc-for>
+          </div>
+          <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 92px; height: 92px; border-radius: 26px; background: var(--t-card,#18181B); border: 2px solid #006FEE; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+            <img src="{{meUri}}" alt="" width="92" height="92" style="width: 92px; height: 92px; image-rendering: pixelated; display: block;">
+          </div>
+        </div>
+      </div>
+      <div style="flex: none; padding-bottom: 8px;">
+        <div class="ob-title" style="font-size: 36px; font-weight: 700; line-height: 1.05;">Bem-vindo ao <span style="color: var(--t-accsoft,#8FC7FF);">Círculo</span></div>
+        <div style="margin-top: 12px; font-size: 15.5px; line-height: 1.55; color: var(--t-sec,#D4D4D8);">O lugar onde quem joga na tela e quem joga na mesa se encontra.</div>
+        <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 10px;">
+          <sc-for list="{{perks}}" as="p" hint-placeholder-count="3">
+            <div style="display: flex; align-items: center; gap: 12px; font-size: 13.5px; color: var(--t-muted,#A1A1AA);">
+              <span style="flex: none; width: 30px; height: 30px; border-radius: 9px; background: var(--t-card,#18181B); color: var(--t-accsoft,#8FC7FF); display: flex; align-items: center; justify-content: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{p.icon}}"></path></svg></span>
+              <span>{{p.text}}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- CADASTRO (simulado) · 1: escolha como entrar -->
+  <sc-if value="{{isSignup}}" hint-placeholder-val="{{false}}">
+    <div class="ob-step" style="flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; padding: 8px 20px 0;">
+      <div class="ob-title" style="font-size: 28px; font-weight: 700; line-height: 1.1;">Salve seu perfil</div>
+      <div style="margin-top: 8px; font-size: 14px; line-height: 1.5; color: var(--t-muted,#A1A1AA);">Crie sua conta para guardar suas escolhas e entrar no Círculo.</div>
+      <div style="margin-top: 28px; display: flex; flex-direction: column; gap: 10px;">
+        <sc-for list="{{socials}}" as="so" hint-placeholder-count="3">
+          <button type="button" onClick="{{so.pick}}" style="height: 52px; border-radius: 16px; border: 1px solid rgba(var(--t-ink,255,255,255),0.16); background: var(--t-card,#18181B); color: var(--t-text,#ECEDEE); font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit;">{{so.label}}</button>
+        </sc-for>
+        <div style="margin: 8px 0; display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: var(--t-muted2,#8E8E99);"><span style="flex: 1; height: 1px; background: rgba(var(--t-ink,255,255,255),0.1);"></span>ou<span style="flex: 1; height: 1px; background: rgba(var(--t-ink,255,255,255),0.1);"></span></div>
+        <button type="button" onClick="{{useEmail}}" style="height: 52px; border-radius: 16px; border: 1px solid rgba(var(--t-ink,255,255,255),0.16); background: var(--t-card,#18181B); color: var(--t-text,#ECEDEE); font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-family: inherit;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>Usar e-mail</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- CADASTRO · 2: conta com e-mail -->
+  <sc-if value="{{isEmail}}" hint-placeholder-val="{{false}}">
+    <div class="ob-step" style="flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; padding: 8px 20px 0;">
+      <div class="ob-title" style="font-size: 28px; font-weight: 700; line-height: 1.1;">Crie sua conta</div>
+      <div style="margin-top: 8px; font-size: 14px; line-height: 1.5; color: var(--t-muted,#A1A1AA);">Use um e-mail que você acessa.</div>
+      <div style="margin-top: 22px; display: flex; flex-direction: column; gap: 14px;">
+        <div>
+          <label for="ob-email" style="display: block; margin-bottom: 6px; font-size: 13px; font-weight: 700; color: var(--t-sec,#D4D4D8);">E-mail</label>
+          <input id="ob-email" type="email" class="ob-field" style="padding-left: 14px;" autocomplete="off" placeholder="voce@email.com" value="{{fEmail}}" onInput="{{onEmail}}">
+          <sc-if value="{{emailBad}}" hint-placeholder-val="{{false}}"><div style="margin-top: 6px; font-size: 12px; color: var(--t-pink,#F38CB0);">Confira o e-mail.</div></sc-if>
+        </div>
+        <div>
+          <label for="ob-pass" style="display: block; margin-bottom: 6px; font-size: 13px; font-weight: 700; color: var(--t-sec,#D4D4D8);">Senha</label>
+          <div style="position: relative;"><input id="ob-pass" type="{{passType}}" class="ob-field" style="padding-left: 14px; padding-right: 52px;" autocomplete="new-password" placeholder="Mínimo de 6 caracteres" value="{{fPass}}" onInput="{{onPass}}"><button type="button" onClick="{{togglePass}}" aria-label="{{passToggleLabel}}" style="position: absolute; right: 2px; top: 2px; width: 40px; height: 40px; padding: 0; border: none; border-radius: 10px; background: transparent; color: var(--t-muted,#A1A1AA); cursor: pointer; display: flex; align-items: center; justify-content: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{passIcon}}"></path></svg></button></div>
+        </div>
+        <div>
+          <label for="ob-pass2" style="display: block; margin-bottom: 6px; font-size: 13px; font-weight: 700; color: var(--t-sec,#D4D4D8);">Confirmar senha</label>
+          <div style="position: relative;"><input id="ob-pass2" type="{{passType}}" class="ob-field" style="padding-left: 14px; padding-right: 52px;" autocomplete="new-password" placeholder="Repita a senha" value="{{fPass2}}" onInput="{{onPass2}}"><button type="button" onClick="{{togglePass}}" aria-label="{{passToggleLabel}}" style="position: absolute; right: 2px; top: 2px; width: 40px; height: 40px; padding: 0; border: none; border-radius: 10px; background: transparent; color: var(--t-muted,#A1A1AA); cursor: pointer; display: flex; align-items: center; justify-content: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{passIcon}}"></path></svg></button></div>
+          <sc-if value="{{passMismatch}}" hint-placeholder-val="{{false}}"><div style="margin-top: 6px; font-size: 12px; color: var(--t-pink,#F38CB0);">As senhas não são iguais.</div></sc-if>
+        </div>
+        <button type="button" role="checkbox" aria-checked="{{termsChecked}}" onClick="{{toggleTerms}}" style="display: flex; align-items: flex-start; gap: 10px; padding: 4px 0; border: none; background: transparent; color: var(--t-muted,#A1A1AA); cursor: pointer; text-align: left; font-size: 13px; line-height: 1.45; font-family: inherit;">
+          <span style="{{termsBox}}"><sc-if value="{{fTerms}}" hint-placeholder-val="{{false}}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--t-white,#FFFFFF)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg></sc-if></span>
+          <span>Li e aceito os Termos de uso e a Política de privacidade do Círculo.</span>
+        </button>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- CADASTRO · 3: nome e @ -->
+  <sc-if value="{{isName}}" hint-placeholder-val="{{false}}">
+    <div class="ob-step" style="flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; padding: 8px 20px 0;">
+      <div class="ob-title" style="font-size: 28px; font-weight: 700; line-height: 1.1;">Como te chamamos?</div>
+      <div style="margin-top: 8px; font-size: 14px; line-height: 1.5; color: var(--t-muted,#A1A1AA);">É assim que os outros jogadores vão te encontrar.</div>
+      <div style="margin-top: 22px; display: flex; flex-direction: column; gap: 14px;">
+        <div>
+          <label for="ob-nome" style="display: block; margin-bottom: 6px; font-size: 13px; font-weight: 700; color: var(--t-sec,#D4D4D8);">Nome</label>
+          <input id="ob-nome" class="ob-field" style="padding-left: 14px;" autocomplete="off" placeholder="Seu nome ou apelido" value="{{fNome}}" onInput="{{onNome}}" maxlength="40">
+        </div>
+        <div>
+          <label for="ob-user" style="display: block; margin-bottom: 6px; font-size: 13px; font-weight: 700; color: var(--t-sec,#D4D4D8);">Nome de usuário</label>
+          <div style="position: relative;">
+            <span aria-hidden="true" style="position: absolute; left: 14px; top: 12px; font-size: 14px; font-weight: 700; color: var(--t-muted2,#8E8E99);">@</span>
+            <input id="ob-user" class="ob-field" style="padding-left: 32px; padding-right: 90px;" autocomplete="off" placeholder="seu.usuario" value="{{fUser}}" onInput="{{onUser}}" maxlength="24">
+            <sc-if value="{{userOk}}" hint-placeholder-val="{{false}}"><span style="position: absolute; right: 14px; top: 14px; font-size: 12px; font-weight: 700; color: var(--t-green,#17C964);">disponível</span></sc-if>
+          </div>
+        </div>
+        <sc-if value="{{hasSuggest}}" hint-placeholder-val="{{false}}">
+          <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 12.5px; color: var(--t-muted,#A1A1AA);">Sugestões:
+            <sc-for list="{{suggests}}" as="sg" hint-placeholder-count="2"><button type="button" onClick="{{sg.pick}}" style="height: 30px; padding: 0 10px; border-radius: 999px; border: 1px solid rgba(143,199,255,0.3); background: rgba(143,199,255,0.08); color: var(--t-accsoft,#8FC7FF); font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: inherit;">{{sg.label}}</button></sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{viaSocial}}" hint-placeholder-val="{{false}}"><div style="font-size: 12px; line-height: 1.45; color: var(--t-muted2,#8E8E99);">Ao continuar, você aceita os Termos de uso e a Política de privacidade do Círculo.</div></sc-if>
+        <div style="padding: 10px 12px; border-radius: 12px; background: rgba(143,199,255,0.08); font-size: 12px; line-height: 1.45; color: var(--t-muted,#A1A1AA);">Este é um protótipo de teste: nenhum dado digitado aqui é salvo ou enviado.</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- PASSO 2: tipo de jogador -->
+  <sc-if value="{{isKind}}" hint-placeholder-val="{{false}}">
+    <div class="ob-step" style="flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 8px 20px 0; overflow-y: auto;">
+      <div class="ob-title" style="font-size: 28px; font-weight: 700; line-height: 1.1;">Que tipo de jogador você é?</div>
+      <div style="margin-top: 8px; font-size: 14px; line-height: 1.5; color: var(--t-muted,#A1A1AA);">Assim a gente mostra jogos, pessoas e squads que combinam com você.</div>
+      <div role="radiogroup" aria-label="Tipo de jogador" style="margin-top: 24px; display: flex; flex-direction: column; gap: 12px;">
+        <sc-for list="{{kinds}}" as="k" hint-placeholder-count="3">
+          <button type="button" role="radio" aria-checked="{{k.checked}}" onClick="{{k.pick}}" style="{{k.style}}">
+            <span style="{{k.iconBox}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{k.icon}}"></path></svg></span>
+            <span style="flex: 1; min-width: 0; text-align: left;">
+              <span style="display: block; font-size: 16px; font-weight: 700;">{{k.label}}</span>
+              <span style="display: block; margin-top: 3px; font-size: 13px; line-height: 1.45; color: var(--t-muted,#A1A1AA);">{{k.desc}}</span>
+            </span>
+            <span style="{{k.radio}}"><sc-if value="{{k.on}}" hint-placeholder-val="{{false}}"><span style="width: 10px; height: 10px; border-radius: 50%; background: #FFFFFF; display: block;"></span></sc-if></span>
+          </button>
+        </sc-for>
+      </div>
+      <sc-if value="{{showPlats}}" hint-placeholder-val="{{false}}">
+        <div class="ob-step" style="margin-top: 22px;">
+          <div style="font-size: 15px; font-weight: 700;">Em quais plataformas você joga?</div>
+          <div style="margin-top: 4px; font-size: 13px; color: var(--t-muted,#A1A1AA);">Marque quantas quiser. Elas aparecem no seu perfil.</div>
+          <div role="group" aria-label="Plataformas" style="margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px;">
+            <sc-for list="{{plats}}" as="pl" hint-placeholder-count="5">
+              <button type="button" aria-pressed="{{pl.pressed}}" onClick="{{pl.toggle}}" style="{{pl.style}}">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{pl.icon}}"></path></svg>{{pl.label}}
+              </button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <!-- PASSO 3/4: jogos favoritos (digitais, depois analógicos) -->
+  <sc-if value="{{isGames}}" hint-placeholder-val="{{false}}">
+    <div class="ob-step" style="flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 8px 20px 0;">
+      <div style="{{gamesKicker}}">{{gamesKickerText}}</div>
+      <div class="ob-title" style="margin-top: 6px; font-size: 28px; font-weight: 700; line-height: 1.1;">{{gamesTitle}}</div>
+      <div style="margin-top: 8px; font-size: 14px; line-height: 1.5; color: var(--t-muted,#A1A1AA);">{{gamesSub}}</div>
+      <div style="position: relative; margin-top: 14px; flex: none;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--t-muted,#A1A1AA)" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="position: absolute; left: 14px; top: 14px;"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+        <input class="ob-field" aria-label="Buscar jogo" placeholder="Buscar jogo pelo nome" value="{{query}}" onInput="{{onQuery}}">
+      </div>
+      <div style="flex: 1; min-height: 0; overflow-y: auto; margin: 12px -4px 0; padding: 4px 4px 12px;">
+        <sc-if value="{{noGames}}" hint-placeholder-val="{{false}}"><div style="padding: 28px 8px; text-align: center; font-size: 13.5px; color: var(--t-muted,#A1A1AA);">Nenhum jogo encontrado com esse nome.</div></sc-if>
+        <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 10px;">
+          <sc-for list="{{gameItems}}" as="it" hint-placeholder-count="6">
+            <button type="button" aria-pressed="{{it.pressed}}" onClick="{{it.toggle}}" style="min-width: 0; padding: 0; border: none; background: transparent; color: var(--t-text,#ECEDEE); cursor: pointer; text-align: left;">
+              <span style="{{it.cover}}">
+                <span style="{{it.check}}"><sc-if value="{{it.on}}" hint-placeholder-val="{{false}}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--t-white,#FFFFFF)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg></sc-if></span>
+              </span>
+              <span style="display: block; margin-top: 6px; font-size: 12px; font-weight: 700; line-height: 1.25; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">{{it.title}}</span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- PASSO 4: avatar -->
+  <sc-if value="{{isAvatar}}" hint-placeholder-val="{{false}}">
+    <div class="ob-step" style="flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 8px 20px 0;">
+      <div class="ob-title" style="font-size: 28px; font-weight: 700; line-height: 1.1;">Agora, o seu avatar</div>
+      <div style="margin-top: 8px; font-size: 14px; line-height: 1.5; color: var(--t-muted,#A1A1AA);">É ele que aparece no seu perfil, nas conversas e andando pelo seu quarto.</div>
+      <div style="flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;">
+        <div style="width: 180px; height: 180px; border-radius: 44px; background: var(--t-card,#18181B); border: 2px solid #006FEE; overflow: hidden; box-shadow: 0 0 0 8px rgba(0,111,238,0.12);">
+          <img src="{{meUri}}" alt="Seu avatar" width="180" height="180" style="width: 180px; height: 180px; image-rendering: pixelated; display: block;">
+        </div>
+        <button type="button" onClick="{{editAvatar}}" style="height: 44px; padding: 0 18px; border-radius: 12px; border: 1px solid rgba(var(--t-ink,255,255,255),0.16); background: var(--t-card,#18181B); color: var(--t-text,#ECEDEE); font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>Personalizar avatar
+        </button>
+        <div style="font-size: 12.5px; color: var(--t-muted,#A1A1AA); text-align: center;">Dá para mudar depois em Editar avatar, no menu.</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- rodapé -->
+  <div style="flex: none; padding: 12px 20px 28px;">
+    <sc-if value="{{showCount}}" hint-placeholder-val="{{false}}"><div style="margin-bottom: 10px; text-align: center; font-size: 12.5px; color: var(--t-muted,#A1A1AA);">{{countLabel}}</div></sc-if>
+    <sc-if value="{{showCta}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{next}}" aria-disabled="{{ctaDisabled}}" style="{{ctaStyle}}">{{ctaLabel}}</button></sc-if>
+    <sc-if value="{{isSignupFoot}}" hint-placeholder-val="{{false}}"><div style="text-align: center; font-size: 13.5px; color: var(--t-muted,#A1A1AA); padding: 8px 0;">Já tem conta? <button type="button" onClick="{{haveAccount}}" style="padding: 4px; border: none; background: transparent; color: var(--t-accsoft,#8FC7FF); font-size: 13.5px; font-weight: 700; cursor: pointer; font-family: inherit;">Entrar</button></div></sc-if>
+    <sc-if value="{{isWelcomeFoot}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{haveAccount}}" style="margin-top: 8px; width: 100%; height: 44px; border: none; background: transparent; color: var(--t-muted,#A1A1AA); font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit;">Já tenho conta</button></sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"avatars":{"editor":null},"meUri":{"editor":null},"finish":{"editor":null},"skip":{"editor":null},"openAvatar":{"editor":null},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { step: 0, fNome: '', fUser: '', fEmail: '', fPass: '', fTerms: false, showPass: false, fPass2: '', auth: null, kind: null, where: null, picked: [], query: '', plats: [], tab: 'digital', limitMsg: '' };
+  }
+  coverId(title) {
+    const ids = {"Hollow Knight":"277d28967fa386097af861953e14c25f","Portal 2":"f69e027e61a24f07a19a3433aaecdfe1","Frostpunk":"d742b55ab9327ec41279d35e7c1b47bf","It Takes Two":"25796a36da18db9bcdd877ad619ed6cf","Firewatch":"e827863b8b1a27c4d177ceb3e4186395","Counter-Strike 2":"b8dfc9323e08ff0d93f2e392ca123355","Outer Wilds":"84956e4bd9cc98eb7fc3a4cc59f78199","Stardew Valley":"103f33fce63cae312c88a26ac07c7325","Celeste":"740c979d64acc42d4ba3a58f7ffa6a07","Disco Elysium":"d6115fe460bc39f64134a3402745b571","Elden Ring":"7e6cc755eda69cc8903a3b38f4003be8","A Short Hike":"24ffd7c04c925b38abc331f4ff276712","Ticket to Ride":"7be1e7e9ef4d7e068198aea62e5c9b73","The Resistance: Avalon":"6f872a9e1e47c881c8c363eaacffe9fe","Cartographers":"2bbafa5ca50297d2d82527d2f186cea3","Coup":"1020e23c2256a72d35ce37bb20e32668","Terraforming Mars":"0fa40174c3d845217e68f9c6e4ed684b","7 Wonders":"3bf63fefca0970a962b3e1bde7616f94","Azul":"c4c2cd9b0c44034d4efe02e766897765","Agricola":"6c7e1dacf1122287d23526e948240fca","Pandemic":"5ebd23f87077370fb8d2eaa31bf425a2","Catan":"da39f348cf772fc5ff8bba976f206c34","Cascadia":"64320339d4d335373144fc3d8dc5c754","Wingspan":"8c5229074fe8117741b15f1bb1b7d3cc","Santorini":"2983ff88878edaad77e2467d03683778","Splendor":"145b0ba42fa5438cc488c322647af2c8","Camel Up":"4944f8f284daf231f3db3f754042e43a","Cosmic Encounter":"ecc4d9078a1524ea374f44a8cf0e9968","Century: Spice Road":"365ca0c856c7d6417ed0bf9d65de4a73","Patchwork":"fb10dbfa1f8dc3011920e51b6ecd4700","Carcassonne":"47b380e0b6a3c8cecefd66cd986a44de"};
+    return ids[title];
+  }
+  digitalSet() { return ['Hollow Knight', 'Portal 2', 'Frostpunk', 'It Takes Two', 'Firewatch', 'Counter-Strike 2', 'Outer Wilds', 'Stardew Valley', 'Celeste', 'Disco Elysium', 'Elden Ring', 'A Short Hike']; }
+  analogSet() { return ['Catan', 'Ticket to Ride', 'Azul', 'Cascadia', '7 Wonders', 'Terraforming Mars', 'Pandemic', 'Wingspan', 'Coup', 'Carcassonne', 'Splendor', 'Century: Spice Road', 'Agricola', 'Cartographers', 'Santorini', 'Patchwork', 'Camel Up', 'The Resistance: Avalon', 'Cosmic Encounter']; }
+  norm(s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+  hue(t) { let h = 0; for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) % 360; return h; }
+  flow() { const k = this.state.kind || 'ambos'; return ['welcome', 'kind'].concat(k !== 'analogico' ? ['dig'] : []).concat(k !== 'digital' ? ['ana'] : []).concat(['avatar', 'signup']).concat(this.state.auth === 'email' ? ['email'] : []).concat(['name']); }
+  go(step) { this.setState({ step: step, query: '', limitMsg: '' }); }
+  finish() {
+    const dig = this.digitalSet(), ana = this.analogSet();
+    const picked = this.state.picked;
+    const k = this.state.kind || 'ambos';
+    if (this.props.finish) this.props.finish({ platforms: k === 'analogico' ? [] : this.state.plats.slice(), kind: k, digital: picked.filter((t) => dig.indexOf(t) >= 0), analog: picked.filter((t) => ana.indexOf(t) >= 0) });
+  }
+  renderVals() {
+    const s = this.state, step = s.step, accent = '#006FEE';
+    const av = this.props.avatars || {};
+    const meUri = this.props.meUri || '';
+    const dots = this.flow().map((x, i) => ({ style: 'display: block; height: 6px; border-radius: 999px; transition: width .25s ease, background .25s ease; width: ' + (i === step ? 22 : 6) + 'px; background: ' + (i <= step ? accent : 'var(--t-line,#3F3F46)') + ';' }));
+    const orbitHandles = ['@rafabtt', '@lari.dados', '@yaz.codes', '@cadu.plays', '@theov', '@sofi.alm'];
+    const orbit = orbitHandles.map((h, i) => {
+      const ang = (i / orbitHandles.length) * Math.PI * 2, r = i % 2 ? 98 : 148, size = i % 2 ? 46 : 54;
+      const x = 150 + Math.cos(ang) * r - size / 2, y = 150 + Math.sin(ang) * r - size / 2;
+      const ring = i % 2 ? 'var(--t-amber,#F5C451)' : 'var(--t-accsoft,#8FC7FF)';
+      return { uri: av[h] || '', wrap: 'position: absolute; left: ' + x.toFixed(1) + 'px; top: ' + y.toFixed(1) + 'px; width: ' + size + 'px; height: ' + size + 'px; animation: ob-counter 40s linear infinite;', img: 'width: ' + size + 'px; height: ' + size + 'px; border-radius: ' + Math.round(size * 0.3) + 'px; border: 2px solid ' + ring + '; background: var(--t-card,#18181B); image-rendering: pixelated; display: block;' };
+    });
+    const perks = [
+      { icon: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75', text: 'Encontre duos e squads para jogar' },
+      { icon: 'm12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2Z', text: 'Avalie jogos digitais e de tabuleiro' },
+      { icon: 'M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z', text: 'Receba amigos no seu quarto' }
+    ];
+    const KINDS = [
+      { k: 'digital', label: 'Digital', desc: 'Jogo no PC, console ou celular.', color: 'var(--t-accsoft,#8FC7FF)', icon: 'M6 12h4M8 10v4M15 13h.01M18 11h.01M17.3 5H6.7a4 4 0 0 0-3.9 3.2l-1.6 8A3 3 0 0 0 5.1 20c.8 0 1.5-.4 2-1l1.4-1.8c.4-.5 1-.8 1.6-.8h3.8c.6 0 1.2.3 1.6.8l1.4 1.8c.5.6 1.2 1 2 1a3 3 0 0 0 2.9-3.8l-1.6-8A4 4 0 0 0 17.3 5Z' },
+      { k: 'analogico', label: 'Analógico', desc: 'Jogo de tabuleiro, cartas e RPG de mesa.', color: 'var(--t-amber,#F5C451)', icon: 'M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2ZM8 8h.01M16 8h.01M12 12h.01M8 16h.01M16 16h.01' },
+      { k: 'ambos', label: 'Os dois', desc: 'Jogo na tela e na mesa, depende do dia.', color: 'var(--t-violet,#C4A7FF)', icon: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18ZM3 12h18M12 3a14 14 0 0 1 0 18' }
+    ];
+    const kinds = KINDS.map((o) => {
+      const on = s.kind === o.k;
+      return { label: o.label, desc: o.desc, icon: o.icon, on: on, checked: on ? 'true' : 'false', pick: () => this.setState((p) => ({ kind: o.k, picked: [], tab: o.k === 'analogico' ? 'analog' : 'digital', where: o.k === 'digital' && p.where === 'presencial' ? null : p.where, plats: o.k === 'analogico' ? [] : p.plats })),
+        style: 'width: 100%; display: flex; align-items: center; gap: 14px; padding: 16px; border-radius: 18px; cursor: pointer; color: var(--t-text,#ECEDEE); background: ' + (on ? 'rgba(0,111,238,0.12)' : 'var(--t-card,#18181B)') + '; border: 1.5px solid ' + (on ? accent : 'rgba(var(--t-ink,255,255,255),0.08)') + ';',
+        iconBox: 'flex: none; width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: ' + o.color + '; background: rgba(var(--t-ink,255,255,255),0.05);',
+        radio: 'flex: none; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid ' + (on ? accent : 'var(--t-faint2,#52525B)') + '; background: ' + (on ? accent : 'transparent') + ';' };
+    });
+    const PLATS = [
+      { k: 'PC', label: 'PC', icon: 'M3 4h18v12H3zM8 20h8M12 16v4' },
+      { k: 'PlayStation', label: 'PlayStation', icon: 'M6 12h4M8 10v4M15 13h.01M18 11h.01M17.3 5H6.7a4 4 0 0 0-3.9 3.2l-1.6 8A3 3 0 0 0 5.1 20c.8 0 1.5-.4 2-1l1.4-1.8c.4-.5 1-.8 1.6-.8h3.8c.6 0 1.2.3 1.6.8l1.4 1.8c.5.6 1.2 1 2 1a3 3 0 0 0 2.9-3.8l-1.6-8A4 4 0 0 0 17.3 5Z' },
+      { k: 'Xbox', label: 'Xbox', icon: 'M6 12h4M8 10v4M15 13h.01M18 11h.01M17.3 5H6.7a4 4 0 0 0-3.9 3.2l-1.6 8A3 3 0 0 0 5.1 20c.8 0 1.5-.4 2-1l1.4-1.8c.4-.5 1-.8 1.6-.8h3.8c.6 0 1.2.3 1.6.8l1.4 1.8c.5.6 1.2 1 2 1a3 3 0 0 0 2.9-3.8l-1.6-8A4 4 0 0 0 17.3 5Z' },
+      { k: 'Switch', label: 'Nintendo Switch', icon: 'M7 4h10v16H7zM3 6a2 2 0 0 1 2-2h2v16H5a2 2 0 0 1-2-2zM21 6a2 2 0 0 0-2-2h-2v16h2a2 2 0 0 0 2-2zM5 9h.01M19 14h.01' },
+      { k: 'Mobile', label: 'Mobile', icon: 'M7 2h10a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1ZM11 18h2' }
+    ];
+    const plats = PLATS.map((o) => {
+      const on = s.plats.indexOf(o.k) >= 0;
+      return { label: o.label, icon: o.icon, pressed: on ? 'true' : 'false',
+        toggle: () => this.setState((p) => ({ plats: p.plats.indexOf(o.k) >= 0 ? p.plats.filter((x) => x !== o.k) : p.plats.concat([o.k]) })),
+        style: 'height: 42px; padding: 0 14px; border-radius: 999px; display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 700; cursor: pointer; color: ' + (on ? 'var(--t-text,#FFFFFF)' : 'var(--t-sec,#D4D4D8)') + '; background: ' + (on ? 'rgba(0,111,238,0.18)' : 'var(--t-card,#18181B)') + '; border: 1.5px solid ' + (on ? accent : 'rgba(var(--t-ink,255,255,255),0.1)') + ';' };
+    });
+    const q = this.norm(s.query);
+    const dig = this.digitalSet(), ana = this.analogSet();
+    const nD = s.picked.filter((t) => dig.indexOf(t) >= 0).length, nA = s.picked.filter((t) => ana.indexOf(t) >= 0).length;
+    const kind = s.kind || 'ambos';
+    const flow = this.flow();
+    const cur = flow[Math.min(step, flow.length - 1)];
+    const isDigStep = cur === 'dig', isAnaStep = cur === 'ana';
+    const pool = isDigStep ? dig : (isAnaStep ? ana : []);
+    const full = isDigStep ? nD >= 4 : nA >= 4;
+    const gameItems = pool.filter((t) => !q || this.norm(t).indexOf(q) >= 0).map((t) => {
+      const on = s.picked.indexOf(t) >= 0, id = this.coverId(t), h = this.hue(t);
+      const locked = full && !on;
+      const bg = id ? 'background-image: url(./covers/' + id + '.jpg);' : 'background-image: linear-gradient(150deg, hsl(' + h + ', 38%, 30%), hsl(' + ((h + 40) % 360) + ', 40%, 16%));';
+      return { title: t, on: on, pressed: on ? 'true' : 'false',
+        toggle: () => { if (locked) { this.setState({ limitMsg: 'Você já escolheu 4. Desmarque um para trocar.' }); return; } this.setState((p) => ({ limitMsg: '', picked: p.picked.indexOf(t) >= 0 ? p.picked.filter((x) => x !== t) : p.picked.concat([t]) })); },
+        cover: 'position: relative; display: block; width: 100%; aspect-ratio: ' + (isAnaStep ? '1 / 1' : '3 / 4') + '; border-radius: 12px; background-color: var(--t-card,#16161A); background-size: cover; background-position: center; ' + bg + ' box-shadow: inset 0 0 0 ' + (on ? '3px ' + accent : '1px rgba(255,255,255,0.08)') + '; opacity: ' + (locked ? 0.35 : 1) + ';',
+        check: 'position: absolute; right: 6px; top: 6px; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: ' + (on ? accent : 'rgba(0,0,0,0.55)') + '; border: 2px solid ' + (on ? accent : 'rgba(var(--t-ink,255,255,255),0.7)') + ';' };
+    });
+    const nStep = isDigStep ? nD : nA;
+    const n = s.picked.length;
+    let ctaLabel = 'Começar', ctaDisabled = false;
+    const slug = (x) => String(x || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9 ]/g, '').trim().split(/\s+/).filter(Boolean);
+    const parts = slug(s.fNome);
+    const sugg = parts.length ? [parts.join('.'), parts[0] + (parts[1] ? parts[1][0] : '') + '.joga', parts[0] + '_circulo'].filter((v, i, a) => v.length >= 3 && a.indexOf(v) === i).slice(0, 3) : [];
+    const emailOk = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s.fEmail.trim());
+    if (cur === 'email') { ctaLabel = 'Continuar'; ctaDisabled = !(emailOk && s.fPass.length >= 6 && s.fPass === s.fPass2 && s.fTerms); }
+    if (cur === 'name') { ctaLabel = 'Criar conta'; ctaDisabled = !(s.fNome.trim() && s.fUser.trim().length >= 3); }
+    if (cur === 'kind') { ctaLabel = 'Continuar'; ctaDisabled = !s.kind; }
+    if (isDigStep || isAnaStep) ctaLabel = nStep ? 'Próximo' : 'Pular esta etapa';
+    if (cur === 'avatar') ctaLabel = 'Próximo';
+    const last = flow.length - 1;
+    const PL = { PC: 'PC', PlayStation: 'PlayStation', Xbox: 'Xbox', Switch: 'Switch', Mobile: 'celular' };
+    const joinE = (a) => a.length <= 1 ? (a[0] || '') : a.slice(0, -1).join(', ') + ' e ' + a[a.length - 1];
+    const platTxt = kind === 'analogico' ? [] : s.plats.map((k) => PL[k] || k);
+    const favTxt = s.picked.slice(0, 3);
+    let summary = '';
+    if (platTxt.length) summary = 'Você joga no ' + joinE(platTxt);
+    if (favTxt.length) summary += (summary ? ' e curte ' : 'Você curte ') + joinE(favTxt);
+    if (!summary) summary = kind === 'analogico' ? 'Você é da turma da mesa' : (kind === 'digital' ? 'Você é da turma da tela' : 'Você joga na tela e na mesa');
+    summary += '. Seu quarto já está te esperando.';
+    return {
+      summary: summary, hasSummary: true,
+      dots: dots, stepNum: step + 1, stepTotal: flow.length, canBack: step > 0,
+      isSignup: cur === 'signup',
+      socials: ['Google', 'Apple', 'Discord'].map((n) => ({ label: 'Continuar com ' + n, pick: () => { this.setState({ auth: 'social' }); this.go(step + 1); } })),
+      useEmail: () => { this.setState({ auth: 'email' }); this.go(step + 1); },
+      isEmail: cur === 'email', isName: cur === 'name', viaSocial: s.auth === 'social',
+      onPass2: (e) => this.setState({ fPass2: e.target.value }), fPass2: s.fPass2,
+      passMismatch: s.fPass2.length > 0 && s.fPass !== s.fPass2,
+      userOk: s.fUser.trim().length >= 3,
+      suggests: sugg.map((u) => ({ label: '@' + u, pick: () => this.setState({ fUser: u }) })), hasSuggest: sugg.length > 0 && !s.fUser,
+      showCta: cur !== 'signup', isSignupFoot: false,
+      isWelcomeFoot: cur === 'welcome', haveAccount: () => { if (this.props.skip) this.props.skip(); },
+      fNome: s.fNome, fUser: s.fUser, fEmail: s.fEmail, fPass: s.fPass, fTerms: s.fTerms,
+      onNome: (e) => this.setState({ fNome: e.target.value }),
+      onUser: (e) => this.setState({ fUser: e.target.value.replace(/[^a-zA-Z0-9._]/g, '').toLowerCase() }),
+      onEmail: (e) => this.setState({ fEmail: e.target.value }),
+      onPass: (e) => this.setState({ fPass: e.target.value }),
+      emailBad: s.fEmail.trim().length > 4 && !emailOk,
+      passType: s.showPass ? 'text' : 'password',
+      togglePass: () => this.setState({ showPass: !s.showPass }),
+      passToggleLabel: s.showPass ? 'Esconder senha' : 'Mostrar senha',
+      passIcon: s.showPass ? 'M9.88 9.88a3 3 0 1 0 4.24 4.24M10.73 5.08A10.4 10.4 0 0 1 12 5c7 0 10 7 10 7a13.2 13.2 0 0 1-1.67 2.68M6.61 6.61A13.5 13.5 0 0 0 2 12s3 7 10 7a9.7 9.7 0 0 0 5.39-1.61M2 2l20 20' : 'M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7ZM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z',
+      toggleTerms: () => this.setState({ fTerms: !s.fTerms }), termsChecked: s.fTerms ? 'true' : 'false',
+      termsBox: 'flex: none; width: 20px; height: 20px; margin-top: 1px; border-radius: 6px; display: flex; align-items: center; justify-content: center; background: ' + (s.fTerms ? accent : 'transparent') + '; border: 2px solid ' + (s.fTerms ? accent : 'var(--t-faint2,#52525B)') + ';',
+      isWelcome: cur === 'welcome', isKind: cur === 'kind', isGames: isDigStep || isAnaStep, isAvatar: cur === 'avatar',
+      orbit: orbit, perks: perks, meUri: meUri,
+      kinds: kinds,
+      query: s.query, onQuery: (e) => this.setState({ query: e.target.value }),
+      gameItems: gameItems, noGames: gameItems.length === 0,
+      gamesKicker: 'font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: ' + (isAnaStep ? 'var(--t-amber,#F5C451)' : 'var(--t-accsoft,#8FC7FF)') + ';',
+      gamesKickerText: isAnaStep ? 'Jogos analógicos · ' + nA + '/4' : 'Jogos digitais · ' + nD + '/4',
+      gamesTitle: isAnaStep ? (kind === 'ambos' ? 'E os analógicos?' : 'Quais são os seus jogos analógicos favoritos?') : 'Quais são os seus jogos digitais favoritos?',
+      gamesSub: isAnaStep ? 'Escolha até 4 jogos de tabuleiro, cartas ou RPG. Eles vão aparecer no seu perfil (você pode mudar depois).' : 'Escolha até 4 jogos digitais. Eles vão aparecer no seu perfil (você pode mudar depois).',
+      showCount: (isDigStep || isAnaStep) && (nStep > 0 || !!s.limitMsg), countLabel: s.limitMsg || (nStep + (nStep === 1 ? ' jogo selecionado' : ' jogos selecionados')),
+      plats: plats, showPlats: s.kind === 'digital' || s.kind === 'ambos',
+      ctaLabel: ctaLabel, ctaDisabled: ctaDisabled ? 'true' : 'false',
+      ctaStyle: 'width: 100%; height: 54px; border: none; border-radius: 16px; font-size: 16px; font-weight: 800; cursor: ' + (ctaDisabled ? 'default' : 'pointer') + '; background: ' + (ctaDisabled ? 'var(--t-card3,#27272A)' : accent) + '; color: ' + (ctaDisabled ? 'var(--t-muted2,#8E8E99)' : '#FFFFFF') + ';',
+      next: () => { if (ctaDisabled) return; if (step < last) this.go(step + 1); else this.finish(); },
+      back: () => { if (step > 0) this.go(step - 1); },
+      skip: () => { if (this.props.skip) this.props.skip(); },
+      editAvatar: () => { if (this.props.openAvatar) this.props.openAvatar(); }
+    };
+  }
+}
+</script>
+</body>
+</html>
